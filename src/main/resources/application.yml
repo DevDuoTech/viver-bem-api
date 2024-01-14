@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: file:env.yml
   datasource:
     url: jdbc:postgresql://localhost:5432/viverbem?createDatabaseIfNotExist=true
     username: viverbem
