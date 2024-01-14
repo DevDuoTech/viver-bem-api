@@ -3,8 +3,8 @@ spring:
     import: file:env.yml
   datasource:
     url: jdbc:postgresql://localhost:5432/viverbem?createDatabaseIfNotExist=true
-    username: viverbem
-    password: viverbem
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
