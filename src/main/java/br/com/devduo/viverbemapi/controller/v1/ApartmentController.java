@@ -1,7 +1,7 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
 import br.com.devduo.viverbemapi.dtos.ApartmentRequest;
-import br.com.devduo.viverbemapi.models.Apartment;
+import br.com.devduo.viverbemapi.models.Apartments;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,17 +17,17 @@ public class ApartmentController {
     private ApartmentService apartmentService;
 
     @GetMapping
-    public ResponseEntity<List<Apartment>> findAll(){
+    public ResponseEntity<List<Apartments>> findAll(){
         return ResponseEntity.ok(apartmentService.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Apartment> findById(@PathVariable(value = "id") Long id){
+    public ResponseEntity<Apartments> findById(@PathVariable(value = "id") Long id){
         return ResponseEntity.ok(apartmentService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Apartment> save(@RequestBody Apartment apartment){
+    public ResponseEntity<Apartments> save(@RequestBody Apartments apartment){
         return new ResponseEntity<>(apartmentService.save(apartment), HttpStatus.CREATED);
     }
 

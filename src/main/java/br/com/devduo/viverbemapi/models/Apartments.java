@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Apartment {
+public class Apartments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
