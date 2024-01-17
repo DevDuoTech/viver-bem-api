@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Contracts {
+public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,9 +27,9 @@ public class Contracts {
     private String description;
     @ManyToOne
     @JoinTable(
-            name = "contract_tenant",
+            name = "contract_apartment",
             joinColumns = @JoinColumn(name = "contract_id"),
-            inverseJoinColumns = @JoinColumn(name = "tenant_id")
+            inverseJoinColumns = @JoinColumn(name = "apartment_id")
     )
-    private Tenants tenant;
+    private Apartment apartment;
 }
