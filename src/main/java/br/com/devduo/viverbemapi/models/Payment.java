@@ -1,5 +1,6 @@
 package br.com.devduo.viverbemapi.models;
 
+import br.com.devduo.viverbemapi.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,6 +25,9 @@ public class Payment {
     private BigDecimal price;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dueDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_type")
+    private PaymentType paymentType;
 
     @ManyToOne
     @JoinTable(
