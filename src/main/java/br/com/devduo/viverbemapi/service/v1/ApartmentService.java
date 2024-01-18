@@ -39,10 +39,6 @@ public class ApartmentService {
                 .orElseThrow(() -> new NullPointerException("No records found"));
     }
 
-    public Apartment save(Apartment apartment){
-        return apartmentRepository.save(apartment);
-    }
-
     public void update(ApartmentsRequestDTO apartment){
         Apartment apartmentToUpdate = findById(apartment.getId());
 
@@ -52,7 +48,4 @@ public class ApartmentService {
         apartmentRepository.save((apartmentToUpdate));
     }
 
-    public void delete(Long id){
-        apartmentRepository.deleteById(id);
-    }
 }

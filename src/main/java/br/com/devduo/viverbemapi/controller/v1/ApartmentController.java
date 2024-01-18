@@ -36,20 +36,10 @@ public class ApartmentController {
         return ResponseEntity.ok(apartmentService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Apartment> save(@RequestBody @Valid Apartment apartment) {
-        return new ResponseEntity<>(apartmentService.save(apartment), HttpStatus.CREATED);
-    }
-
     @PutMapping
     public ResponseEntity<Void> update(@RequestBody @Valid ApartmentsRequestDTO apartment) {
         apartmentService.update(apartment);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id) {
-        apartmentService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }
