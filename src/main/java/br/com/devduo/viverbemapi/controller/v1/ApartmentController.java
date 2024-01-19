@@ -27,7 +27,7 @@ public class ApartmentController {
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "name"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "numberAp"));
         return ResponseEntity.ok(apartmentService.findAll(pageable));
     }
 
