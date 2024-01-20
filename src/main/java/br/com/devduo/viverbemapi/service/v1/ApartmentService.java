@@ -1,8 +1,8 @@
 package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.ApartmentController;
-import br.com.devduo.viverbemapi.controller.v1.TenantController;
 import br.com.devduo.viverbemapi.dtos.ApartmentsRequestDTO;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class ApartmentService {
 
     public Apartment findById(Long id){
         return apartmentRepository.findById(id)
-                .orElseThrow(() -> new NullPointerException("No records found"));
+                .orElseThrow(() -> new ResourceNotFoundException("No records found"));
     }
 
     public void update(ApartmentsRequestDTO apartment){

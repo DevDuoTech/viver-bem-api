@@ -2,7 +2,7 @@ package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.TenantController;
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
-import br.com.devduo.viverbemapi.models.Apartment;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class TenantService {
 
     public Tenant findById(Long id) {
         return tenantRepository.findById(id)
-                .orElseThrow(() -> new NullPointerException("No records found for this ID"));
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
 
     public Tenant save(Tenant tenant){
