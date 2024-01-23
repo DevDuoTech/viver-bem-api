@@ -19,8 +19,10 @@ public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "start_date")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate startDate;
+    @Column(name = "end_date")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate endDate;
     private BigDecimal price;

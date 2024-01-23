@@ -44,7 +44,7 @@ public class TenantService {
     }
 
     public void update(TenantsRequestDTO dto){
-        Tenant tenantToUpdate = findById(dto.getId());
+        Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf());
 
         tenantToUpdate.setName(dto.getName());
         tenantToUpdate.setCpf(dto.getCpf());
