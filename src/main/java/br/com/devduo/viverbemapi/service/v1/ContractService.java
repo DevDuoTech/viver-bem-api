@@ -48,16 +48,16 @@ public class ContractService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this ID"));
     }
 
-    public String save(ContractRequestDTO contractRequestDto, Long apartmentId) {
+    public String save(ContractRequestDTO contractRequestDto, Long numberAp) {
         if (contractRequestDto == null)
             throw new BadRequestException("ContractDTO cannot be null");
         if (contractRequestDto.getTenantsRequestDTO() == null)
             throw new BadRequestException("TenantDTO cannot be null");
-        if (apartmentId == null)
+        if (numberAp == null)
             throw new BadRequestException("Apartment ID cannot be null");
 
         TenantsRequestDTO tenantDto = contractRequestDto.getTenantsRequestDTO();
-        Apartment apartment = apartmentService.findById(apartmentId);
+        Apartment apartment = apartmentService.findByNumberAp(numberAp);
         apartment.setStatus(StatusApart.OCCUPIED);
 
         Tenant tenant = Tenant.builder()

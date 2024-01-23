@@ -53,6 +53,13 @@ public class ApartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found"));
     }
 
+    public Apartment findByNumberAp(Long numberAp){
+        Apartment apartment = apartmentRepository.findByNumberAp(numberAp);
+        if (apartment == null)
+            throw new ResourceNotFoundException("Resource not found for this apartment number");
+        return apartment;
+    }
+
     public void update(ApartmentsRequestDTO apartment){
         Apartment apartmentToUpdate = findById(apartment.getId());
 

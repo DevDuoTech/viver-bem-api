@@ -33,9 +33,9 @@ public class ApartmentController {
         return ResponseEntity.ok(apartmentService.findAll(pageable, statusApart));
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Apartment> findById(@PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(apartmentService.findById(id));
+    @GetMapping(path = "/{ap_num}")
+    public ResponseEntity<Apartment> findByNumberAp(@PathVariable(value = "ap_num") Long apNum) {
+        return ResponseEntity.ok(apartmentService.findByNumberAp(apNum));
     }
 
     @PutMapping
