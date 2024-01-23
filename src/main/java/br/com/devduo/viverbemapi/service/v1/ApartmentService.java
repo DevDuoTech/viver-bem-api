@@ -2,17 +2,22 @@ package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.ApartmentController;
 import br.com.devduo.viverbemapi.dtos.ApartmentsRequestDTO;
+import br.com.devduo.viverbemapi.enums.StatusApart;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -24,14 +29,23 @@ public class ApartmentService {
     @Autowired
     private PagedResourcesAssembler<Apartment> assembler;
 
-    public PagedModel<EntityModel<Apartment>> findAll(Pageable pageable){
+    public PagedModel<EntityModel<Apartment>> findAll(Pageable pageable, StatusApart statusApart){
         Page<Apartment> apartmentPage = apartmentRepository.findAll(pageable);
 
+        List<Apartment> apartmentList = apartmentPage.toList();
+
+        if (statusApart != null)
+            apartmentList = apartmentList.stream()
+                    .filter(p -> p.getStatus().equals(statusApart))
+                    .collect(Collectors.toList());
+
+        Page<Apartment> apartmentPageFiltered = new PageImpl<>(apartmentList);
+
         Link link = linkTo(methodOn(ApartmentController.class)
-                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc", statusApart))
                 .withSelfRel();
 
-        return assembler.toModel(apartmentPage, link);
+        return assembler.toModel(apartmentPageFiltered, link);
     }
 
     public Apartment findById(Long id){

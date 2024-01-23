@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
 import br.com.devduo.viverbemapi.dtos.ApartmentsRequestDTO;
+import br.com.devduo.viverbemapi.enums.StatusApart;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import jakarta.validation.Valid;
@@ -24,11 +25,12 @@ public class ApartmentController {
     public ResponseEntity<PagedModel<EntityModel<Apartment>>> findAll(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
-            @RequestParam(value = "direction", defaultValue = "asc") String direction
-    ) {
+            @RequestParam(value = "direction", defaultValue = "asc") String direction,
+            @RequestParam(value = "ap_status", required = false) StatusApart statusApart
+            ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "numberAp"));
-        return ResponseEntity.ok(apartmentService.findAll(pageable));
+        return ResponseEntity.ok(apartmentService.findAll(pageable, statusApart));
     }
 
     @GetMapping(path = "/{id}")
