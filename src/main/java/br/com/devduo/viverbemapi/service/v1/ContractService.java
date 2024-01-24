@@ -19,6 +19,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -43,7 +45,7 @@ public class ContractService {
         return assembler.toModel(contractPage, link);
     }
 
-    public Contract findById(Long id) {
+    public Contract findById(UUID id) {
         return contractRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this ID"));
     }

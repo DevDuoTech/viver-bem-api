@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/contracts")
 public class ContractController {
@@ -30,6 +32,11 @@ public class ContractController {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "startDate"));
         return ResponseEntity.ok(contractService.findAll(pageable));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Contract> findById(@PathVariable(value = "id") UUID id) {
+        return ResponseEntity.ok(contractService.findById(id));
     }
 
     @PostMapping

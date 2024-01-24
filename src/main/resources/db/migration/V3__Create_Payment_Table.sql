@@ -8,7 +8,7 @@ CREATE TABLE payment (
 );
 
 CREATE TABLE payment_contract (
-  contract_id BIGINT,
+   contract_id UUID,
    payment_id BIGINT NOT NULL,
    CONSTRAINT pk_payment_contract PRIMARY KEY (payment_id)
 );
