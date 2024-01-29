@@ -18,22 +18,22 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TenantsRequestDTO {
-    @NotEmpty
+    @NotEmpty(message = "{field.name.required}")
     private String name;
-    @CPF
-    @NotEmpty
+    @CPF(message = "{field.cpf.invalid}")
+    @NotEmpty(message = "{field.cpf.required}")
     private String cpf;
-    @NotEmpty
+    @NotEmpty(message = "{field.phone.required}")
     private String phone;
-    @NotEmpty
+    @NotEmpty(message = "{field.rg.required}")
     @Column(length = 9)
     private String rg;
-    @NotNull
-    @Past
+    @NotNull(message = "{field.birthdate.required}")
+    @Past(message = "{field.birthdate.invalid}")
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "birth_date")
     private LocalDate birthDate;
-    @NotEmpty
+    @NotEmpty(message = "{field.birthstate.required}")
     @Column(name = "birth_state")
     private String birthState;
 }

@@ -23,7 +23,7 @@ public class Tenant {
     private String cpf;
     @Column(length = 11)
     private String phone;
-    @Column(length = 9)
+    @Column(length = 9, unique = true)
     private String rg;
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "birth_date")

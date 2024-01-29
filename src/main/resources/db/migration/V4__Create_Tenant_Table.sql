@@ -17,6 +17,8 @@ CREATE TABLE tenant_apartment (
 
 ALTER TABLE tenant ADD CONSTRAINT uc_tenant_cpf UNIQUE (cpf);
 
+ALTER TABLE tenant ADD CONSTRAINT uc_tenant_rg UNIQUE (rg);
+
 ALTER TABLE tenant_apartment ADD CONSTRAINT fk_tenapa_on_apartment FOREIGN KEY (apartment_id) REFERENCES apartment (id);
 
 ALTER TABLE tenant_apartment ADD CONSTRAINT fk_tenapa_on_tenant FOREIGN KEY (tenant_id) REFERENCES tenant (id);
