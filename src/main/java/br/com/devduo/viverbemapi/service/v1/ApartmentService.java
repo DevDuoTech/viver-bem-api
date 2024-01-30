@@ -29,7 +29,7 @@ public class ApartmentService {
     @Autowired
     private PagedResourcesAssembler<Apartment> assembler;
 
-    public PagedModel<EntityModel<Apartment>> findAll(Pageable pageable, StatusApart statusApart){
+    public PagedModel<EntityModel<Apartment>> findAll(Pageable pageable, StatusApart statusApart) {
         Page<Apartment> apartmentPage = apartmentRepository.findAll(pageable);
 
         List<Apartment> apartmentList = apartmentPage.toList();
@@ -48,19 +48,19 @@ public class ApartmentService {
         return assembler.toModel(apartmentPageFiltered, link);
     }
 
-    public Apartment findById(Long id){
+    public Apartment findById(Long id) {
         return apartmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found"));
     }
 
-    public Apartment findByNumberAp(Long numberAp){
+    public Apartment findByNumberAp(Long numberAp) {
         Apartment apartment = apartmentRepository.findByNumberAp(numberAp);
         if (apartment == null)
             throw new ResourceNotFoundException("Resource not found for this apartment number");
         return apartment;
     }
 
-    public void update(ApartmentsRequestDTO apartment){
+    public void update(ApartmentsRequestDTO apartment) {
         Apartment apartmentToUpdate = findById(apartment.getId());
 
         apartmentToUpdate.setDescription(apartment.getDescription());
@@ -69,4 +69,14 @@ public class ApartmentService {
         apartmentRepository.save((apartmentToUpdate));
     }
 
+    public void updateStatus(Long apNum) {
+        Apartment apartment = findByNumberAp(apNum);
+        StatusApart currentStatus = apartment.getStatus();
+        StatusApart newStatus = (currentStatus == StatusApart.OCCUPIED) ? StatusApart.AVAILABLE : StatusApart.OCCUPIED;
+
+        if (currentStatus != newStatus) {
+            apartment.setStatus(newStatus);
+            apartmentRepository.save(apartment);
+        }
+    }
 }

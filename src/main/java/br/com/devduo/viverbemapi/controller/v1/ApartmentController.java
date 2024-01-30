@@ -27,7 +27,7 @@ public class ApartmentController {
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction,
             @RequestParam(value = "ap_status", required = false) StatusApart statusApart
-            ) {
+    ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "numberAp"));
         return ResponseEntity.ok(apartmentService.findAll(pageable, statusApart));
@@ -44,4 +44,9 @@ public class ApartmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping(path = "/{ap_num}")
+    public ResponseEntity<Void> updateStatus(@PathVariable(value = "ap_num") Long apNum) {
+        apartmentService.updateStatus(apNum);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
