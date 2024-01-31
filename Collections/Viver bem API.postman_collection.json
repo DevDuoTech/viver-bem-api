@@ -1,0 +1,1598 @@
+{
+	"info": {
+		"_postman_id": "d3c45111-0be6-4e1e-a895-3f0163d59772",
+		"name": "Viver bem API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24862262"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "tenants",
+							"item": [
+								{
+									"name": "{id}",
+									"item": [
+										{
+											"name": "Finds a Tenant",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/tenants/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"tenants",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Finds a Tenant"
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "http://localhost:8080/api/v1/tenants/:id",
+															"protocol": "http",
+															"host": [
+																"localhost"
+															],
+															"port": "8080",
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\",\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"OCCUPIED\"\n    }\n  },\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\",\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"AVAILABLE\"\n    }\n  }\n]"
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/tenants/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal Error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/tenants/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "Deletes a Tenant",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/tenants/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"tenants",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Deletes a Tenant"
+											},
+											"response": [
+												{
+													"name": "No Content",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "http://localhost:8080/api/v1/tenants/:id",
+															"protocol": "http",
+															"host": [
+																"localhost"
+															],
+															"port": "8080",
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/tenants/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal Error",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/tenants/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"tenants",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Finds all Tenant",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants?page=0&size=12&direction=asc",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "size",
+													"value": "12"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
+												}
+											]
+										},
+										"description": "Finds all Tenant"
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "http://localhost:8080/api/v1/tenants?page=0&size=12&direction=asc",
+													"protocol": "http",
+													"host": [
+														"localhost"
+													],
+													"port": "8080",
+													"path": [
+														"api",
+														"v1",
+														"tenants"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "[\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\",\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"OCCUPIED\"\n    }\n  },\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\",\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"AVAILABLE\"\n    }\n  }\n]"
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/tenants?page=0&size=12&direction=asc",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"tenants"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								},
+								{
+									"name": "Updates a Tenant",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"name\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/api/v1/tenants",
+										"description": "Updates a Tenant"
+									},
+									"response": [
+										{
+											"name": "No Content",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"name\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "http://localhost:8080/api/v1/tenants"
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"name\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/tenants"
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"name\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/tenants"
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								},
+								{
+									"name": "Adds a new Tenant",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"id\": \"<long>\",\n  \"name\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\",\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"apartment\": {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"AVAILABLE\"\n  }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/api/v1/tenants",
+										"description": "Adds a new Tenant"
+									},
+									"response": [
+										{
+											"name": "Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"id\": \"<long>\",\n  \"name\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\",\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"apartment\": {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"AVAILABLE\"\n  }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "http://localhost:8080/api/v1/tenants"
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"id\": \"<long>\",\n  \"name\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\",\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"apartment\": {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"AVAILABLE\"\n  }\n}"
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"id\": \"<long>\",\n  \"name\": \"<string>\",\n  \"cpf\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"rg\": \"<string>\",\n  \"birthDate\": \"<date>\",\n  \"birthState\": \"<string>\",\n  \"apartment\": {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"AVAILABLE\"\n  }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/tenants"
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "apartments",
+							"item": [
+								{
+									"name": "{ap_num}",
+									"item": [
+										{
+											"name": "Finds a Apartment",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"apartments",
+														":ap_num"
+													],
+													"variable": [
+														{
+															"key": "ap_num",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Finds a Apartment"
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "http://localhost:8080/api/v1/apartments/:ap_num",
+															"protocol": "http",
+															"host": [
+																"localhost"
+															],
+															"port": "8080",
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"OCCUPIED\"\n  },\n  {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"OCCUPIED\"\n  }\n]"
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal Error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "Updates Apartment Status",
+											"request": {
+												"method": "PATCH",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"apartments",
+														":ap_num"
+													],
+													"variable": [
+														{
+															"key": "ap_num",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Updates Apartment Status"
+											},
+											"response": [
+												{
+													"name": "No Content",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [],
+														"url": {
+															"raw": "http://localhost:8080/api/v1/apartments/:ap_num",
+															"protocol": "http",
+															"host": [
+																"localhost"
+															],
+															"port": "8080",
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal Error",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/apartments/:ap_num",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"apartments",
+																":ap_num"
+															],
+															"variable": [
+																{
+																	"key": "ap_num"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Finds all Apartment",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/apartments?page=0&size=12&direction=asc&ap_status=AVAILABLE",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"apartments"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "size",
+													"value": "12"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
+												},
+												{
+													"key": "ap_status",
+													"value": "AVAILABLE"
+												}
+											]
+										},
+										"description": "Finds all Apartment"
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/apartments?page=0&size=12&direction=asc&ap_status=AVAILABLE",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"apartments"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														},
+														{
+															"key": "ap_status",
+															"value": "AVAILABLE"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "[\n  {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"OCCUPIED\"\n  },\n  {\n    \"id\": \"<long>\",\n    \"numberAp\": \"<long>\",\n    \"description\": \"<string>\",\n    \"status\": \"OCCUPIED\"\n  }\n]"
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/apartments?page=0&size=12&direction=asc&ap_status=AVAILABLE",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"apartments"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														},
+														{
+															"key": "ap_status",
+															"value": "AVAILABLE"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								},
+								{
+									"name": "Updates a Apartment",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"<string>\",\n  \"status\": \"AVAILABLE\",\n  \"id\": \"<long>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/api/v1/apartments",
+										"description": "Updates a Apartment"
+									},
+									"response": [
+										{
+											"name": "No Content",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"description\": \"<string>\",\n  \"status\": \"AVAILABLE\",\n  \"id\": \"<long>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/apartments"
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"description\": \"<string>\",\n  \"status\": \"AVAILABLE\",\n  \"id\": \"<long>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/apartments"
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"description\": \"<string>\",\n  \"status\": \"AVAILABLE\",\n  \"id\": \"<long>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/api/v1/apartments"
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "contracts",
+							"item": [
+								{
+									"name": "{uuid}",
+									"item": [
+										{
+											"name": "Finds a Contract",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												},
+												"description": "Finds a Contract by UUID"
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/contracts/:uuid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"contracts",
+																":uuid"
+															],
+															"variable": [
+																{
+																	"key": "uuid"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"id\": \"<uuid>\",\n    \"startDate\": \"<date>\",\n    \"endDate\": \"<date>\",\n    \"price\": \"<number>\",\n    \"description\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"OCCUPIED\"\n    }\n  },\n  {\n    \"id\": \"<uuid>\",\n    \"startDate\": \"<date>\",\n    \"endDate\": \"<date>\",\n    \"price\": \"<number>\",\n    \"description\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"AVAILABLE\"\n    }\n  }\n]"
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/contracts/:uuid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"contracts",
+																":uuid"
+															],
+															"variable": [
+																{
+																	"key": "uuid"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal Error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/contracts/:uuid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"contracts",
+																":uuid"
+															],
+															"variable": [
+																{
+																	"key": "uuid"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Finds all Contract",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/contracts?page=0&size=12&direction=asc",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"contracts"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "size",
+													"value": "12"
+												},
+												{
+													"key": "direction",
+													"value": "asc"
+												}
+											]
+										},
+										"description": "Finds all Contract"
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts?page=0&size=12&direction=asc",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "[\n  {\n    \"id\": \"<uuid>\",\n    \"startDate\": \"<date>\",\n    \"endDate\": \"<date>\",\n    \"price\": \"<number>\",\n    \"description\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"OCCUPIED\"\n    }\n  },\n  {\n    \"id\": \"<uuid>\",\n    \"startDate\": \"<date>\",\n    \"endDate\": \"<date>\",\n    \"price\": \"<number>\",\n    \"description\": \"<string>\",\n    \"apartment\": {\n      \"id\": \"<long>\",\n      \"numberAp\": \"<long>\",\n      \"description\": \"<string>\",\n      \"status\": \"AVAILABLE\"\n    }\n  }\n]"
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts?page=0&size=12&direction=asc",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "0"
+														},
+														{
+															"key": "size",
+															"value": "12"
+														},
+														{
+															"key": "direction",
+															"value": "asc"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								},
+								{
+									"name": "Adds a new Contract",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"endDate\": \"<date>\",\n  \"price\": \"<number>\",\n  \"startDate\": \"<date>\",\n  \"tenantsRequestDTO\": {\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"name\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\"\n  },\n  \"description\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/contracts?ap_id=<long>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"contracts"
+											],
+											"query": [
+												{
+													"key": "ap_id",
+													"value": "<long>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Adds a new Contract"
+									},
+									"response": [
+										{
+											"name": "Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"endDate\": \"<date>\",\n  \"price\": \"<number>\",\n  \"startDate\": \"<date>\",\n  \"tenantsRequestDTO\": {\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"name\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\"\n  },\n  \"description\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts?ap_id=<long>",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts"
+													],
+													"query": [
+														{
+															"key": "ap_id",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Bad Request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"endDate\": \"<date>\",\n  \"price\": \"<number>\",\n  \"startDate\": \"<date>\",\n  \"tenantsRequestDTO\": {\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"name\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\"\n  },\n  \"description\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts?ap_id=<long>",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts"
+													],
+													"query": [
+														{
+															"key": "ap_id",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Error",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"endDate\": \"<date>\",\n  \"price\": \"<number>\",\n  \"startDate\": \"<date>\",\n  \"tenantsRequestDTO\": {\n    \"birthDate\": \"<date>\",\n    \"birthState\": \"<string>\",\n    \"cpf\": \"<string>\",\n    \"name\": \"<string>\",\n    \"phone\": \"<string>\",\n    \"rg\": \"<string>\"\n  },\n  \"description\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/contracts?ap_id=<long>",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"contracts"
+													],
+													"query": [
+														{
+															"key": "ap_id",
+															"value": "<long>",
+															"description": "(Required) "
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
