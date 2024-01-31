@@ -2,8 +2,8 @@ version: '3'
 
 services:
   api:
-    build:
-      context: .
+    image: matheusslr/viver-bem-api
+    build: .
     container_name: viver-bem-api
     ports:
       - "8080:8080"
@@ -17,8 +17,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     restart: on-failure
+    command: mvn spring-boot:run
     networks:
-      - postgres
+      - viver-bem-network
 
   postgres:
     container_name: postgres_container
@@ -31,7 +32,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - postgres
+      - viver-bem-network
 
   pgadmin:
     container_name: pgadmin_container
@@ -42,12 +43,12 @@ services:
     ports:
       - "5050:80"
     networks:
-      - postgres
+      - viver-bem-network
     depends_on:
       - postgres
 
 networks:
-  postgres:
+  viver-bem-network:
     driver: bridge
 
 volumes:
