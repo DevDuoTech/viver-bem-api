@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Tenant findByName(String name);
 
     @Query("SELECT t FROM Tenant t WHERE t.cpf = :cpf")
-    Tenant findByCPF(@Param("cpf") String cpf);
+    Optional<Tenant> findByCPF(@Param("cpf") String cpf);
 }

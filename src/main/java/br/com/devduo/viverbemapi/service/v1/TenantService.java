@@ -44,7 +44,8 @@ public class TenantService {
     }
 
     public void update(TenantsRequestDTO dto){
-        Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf());
+        Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf())
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
 
         tenantToUpdate.setName(dto.getName());
         tenantToUpdate.setCpf(dto.getCpf());
