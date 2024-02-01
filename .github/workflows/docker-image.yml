@@ -14,8 +14,8 @@ jobs:
         with:
           postgresql version: '11'
           postgresql db: viverbem
-          postgresql user: $${ secrets.DB_USERNAME }}
-          postgresql password: $${ secrets.DB_PASSWORD }}
+          postgresql user: ${{ secrets.DB_USERNAME }}
+          postgresql password: ${{ secrets.DB_PASSWORD }}
 
       - uses: actions/checkout@v3
 
