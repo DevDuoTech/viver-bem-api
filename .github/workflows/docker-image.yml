@@ -18,14 +18,11 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd "pg_isready -h localhost -p 5432" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Wait for PostgreSQL to be ready
-        run: |
-          sleep 10s
-          docker ps
-          docker exec 3343e46c91864860b58c5f627fc25bd5_postgreslatest_821476 pg_isready
+        run: sleep 10s
 
   build:
     runs-on: ubuntu-latest
