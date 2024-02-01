@@ -3,7 +3,6 @@ version: '3'
 services:
   api:
     image: matheusslr/viver-bem-api
-    build: .
     container_name: viver-bem-api
     ports:
       - "8080:8080"
