@@ -20,7 +20,7 @@ jobs:
 
       - uses: harmon758/postgresql-action@v1
         with:
-          postgresql version: '11'
+          postgresql version: '13'
           postgresql db: viverbem
           postgresql user: ${{ secrets.DB_USERNAME }}
           postgresql password: ${{ secrets.DB_PASSWORD }}
