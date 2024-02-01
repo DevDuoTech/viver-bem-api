@@ -25,7 +25,7 @@ jobs:
         run: |
           sleep 10s
           docker ps
-          docker exec postgres pg_isready
+          docker exec 3343e46c91864860b58c5f627fc25bd5_postgreslatest_821476 pg_isready
 
   build:
     runs-on: ubuntu-latest
