@@ -55,6 +55,7 @@ jobs:
 
       - name: Push to Docker Hub Container Registry
         run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/viver-bem-api:latest
           docker tag ${{ secrets.DOCKER_USERNAME }}/viver-bem-api:latest ${{ secrets.DOCKER_USERNAME }}/viver-bem-api:${{ github.run_id }}
           docker push ${{ secrets.DOCKER_USERNAME }}/viver-bem-api:${{ github.run_id }}
           docker push ${{ secrets.DOCKER_USERNAME }}/viver-bem-api:latest
