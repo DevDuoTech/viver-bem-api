@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
 import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,8 +75,8 @@ public class ContractController {
             }
     )
     @GetMapping("/{uuid}")
-    public ResponseEntity<Contract> findById(@PathVariable(value = "id") UUID uuid) {
-        return ResponseEntity.ok(contractService.findById(uuid));
+    public ResponseEntity<Contract> findByUuid(@PathVariable(value = "uuid") UUID uuid) {
+        return ResponseEntity.ok(contractService.findByUuid(uuid));
     }
 
     @Operation(
@@ -94,5 +95,22 @@ public class ContractController {
             @RequestParam(value = "ap_id") Long apId
     ) {
         return new ResponseEntity<>(contractService.save(contractRequestDTO, apId), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Updates a Contract",
+            description = "Updates a Contract",
+            tags = {"Contract"},
+            responses = {
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
+            }
+    )
+    @PutMapping
+    public ResponseEntity<Void> update(@RequestBody @Valid ContractRequestUpdateDTO dto) {
+        contractService.update(dto);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -3,6 +3,7 @@ package br.com.devduo.viverbemapi.service.v1;
 import br.com.devduo.viverbemapi.controller.v1.ContractController;
 import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
 import br.com.devduo.viverbemapi.enums.StatusApart;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
@@ -46,16 +47,16 @@ public class ContractService {
         return assembler.toModel(contractPage, link);
     }
 
-    public Contract findById(UUID id) {
-        return contractRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this ID"));
+    public Contract findByUuid(UUID uuid) {
+        return contractRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this UUID"));
     }
 
     public String save(ContractRequestSaveDTO dto, Long numberAp) {
         if (dto == null)
             throw new BadRequestException("ContractDTO cannot be null");
         if (numberAp == null)
-            throw new BadRequestException("Apartment ID cannot be null");
+            throw new BadRequestException("Apartment number cannot be null");
 
         ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
         TenantsRequestDTO tenantDto = dto.getTenantsRequestDTO();
@@ -88,5 +89,20 @@ public class ContractService {
         contractRepository.save(contract);
 
         return "Contract saved successfully";
+    }
+
+    public void update(ContractRequestUpdateDTO dto) {
+        if(dto == null)
+            throw new BadRequestException("ContractRequestDTO cannot be null");
+
+        ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
+        Contract contract = findByUuid(dto.getUuid());
+
+        contract.setStartDate(contractRequestDTO.getStartDate());
+        contract.setEndDate(contractRequestDTO.getEndDate());
+        contract.setPrice(contractRequestDTO.getPrice());
+        contract.setDescription(contractRequestDTO.getDescription());
+
+        contractRepository.save(contract);
     }
 }
