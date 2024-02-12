@@ -729,7 +729,7 @@
             defs["Contract"] = {
   "type" : "object",
   "properties" : {
-    "id" : {
+    "uuid" : {
       "type" : "string",
       "format" : "uuid"
     },
@@ -753,7 +753,7 @@
   }
 };
             defs["ContractRequestDTO"] = {
-  "required" : [ "endDate", "price", "startDate", "tenantsRequestDTO" ],
+  "required" : [ "endDate", "price", "startDate" ],
   "type" : "object",
   "properties" : {
     "startDate" : {
@@ -769,9 +769,31 @@
     },
     "description" : {
       "type" : "string"
+    }
+  }
+};
+            defs["ContractRequestSaveDTO"] = {
+  "required" : [ "contractRequestDTO", "tenantsRequestDTO" ],
+  "type" : "object",
+  "properties" : {
+    "contractRequestDTO" : {
+      "$ref" : "#/components/schemas/ContractRequestDTO"
     },
     "tenantsRequestDTO" : {
       "$ref" : "#/components/schemas/TenantsRequestDTO"
+    }
+  }
+};
+            defs["ContractRequestUpdateDTO"] = {
+  "required" : [ "contractRequestDTO" ],
+  "type" : "object",
+  "properties" : {
+    "uuid" : {
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "contractRequestDTO" : {
+      "$ref" : "#/components/schemas/ContractRequestDTO"
     }
   }
 };
@@ -864,11 +886,14 @@
                     <li data-group="Contract" data-name="findAll" class="">
                       <a href="#api-Contract-findAll">findAll</a>
                     </li>
-                    <li data-group="Contract" data-name="findById" class="">
-                      <a href="#api-Contract-findById">findById</a>
+                    <li data-group="Contract" data-name="findByUuid" class="">
+                      <a href="#api-Contract-findByUuid">findByUuid</a>
                     </li>
                     <li data-group="Contract" data-name="save" class="">
                       <a href="#api-Contract-save">save</a>
+                    </li>
+                    <li data-group="Contract" data-name="update" class="">
+                      <a href="#api-Contract-update">update</a>
                     </li>
                   <li class="nav-header" data-group="Tenant"><a href="#api-Tenant">API Methods - Tenant</a></li>
                     <li data-group="Tenant" data-name="delete" class="">
@@ -2493,10 +2518,10 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
-                    <div id="api-Contract-findById">
-                      <article id="api-Contract-findById-0" data-group="User" data-name="findById" data-version="0">
+                    <div id="api-Contract-findByUuid">
+                      <article id="api-Contract-findByUuid-0" data-group="User" data-name="findByUuid" data-version="0">
                         <div class="pull-left">
-                          <h1>findById</h1>
+                          <h1>findByUuid</h1>
                           <p>Finds a Contract by UUID</p>
                         </div>
                         <div class="pull-right"></div>
@@ -2507,26 +2532,26 @@ except ApiException as e:
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Contract-findById-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Contract-findById-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Contract-findById-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Contract-findById-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Contract-findById-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Contract-findById-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-Contract-findByUuid-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Contract-findByUuid-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Contract-findByUuid-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Contract-findByUuid-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Contract-findByUuid-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Contract-findByUuid-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Contract-findById-0-curl">
+                          <div class="tab-pane active" id="examples-Contract-findByUuid-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
 "http://localhost:8080/api/v1/contracts/{uuid}"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Contract-findById-0-java">
+                          <div class="tab-pane" id="examples-Contract-findByUuid-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
@@ -2540,45 +2565,48 @@ public class ContractApiExample {
     public static void main(String[] args) {
         
         ContractApi apiInstance = new ContractApi();
+        UUID uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // UUID | 
         try {
-            array[Contract] result = apiInstance.findById();
+            array[Contract] result = apiInstance.findByUuid(uuid);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling ContractApi#findById");
+            System.err.println("Exception when calling ContractApi#findByUuid");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Contract-findById-0-android">
+                          <div class="tab-pane" id="examples-Contract-findByUuid-0-android">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ContractApi;
 
 public class ContractApiExample {
 
     public static void main(String[] args) {
         ContractApi apiInstance = new ContractApi();
+        UUID uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // UUID | 
         try {
-            array[Contract] result = apiInstance.findById();
+            array[Contract] result = apiInstance.findByUuid(uuid);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling ContractApi#findById");
+            System.err.println("Exception when calling ContractApi#findByUuid");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Contract-findById-0-groovy">
+  <div class="tab-pane" id="examples-Contract-findByUuid-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Contract-findById-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">UUID *uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // 
+
 ContractApi *apiInstance = [[ContractApi alloc] init];
 
 // Finds a Contract
-[apiInstance findByIdWithCompletionHandler: 
-              ^(array[Contract] output, NSError* error) {
+[apiInstance findByUuidWith:uuid
+              completionHandler: ^(array[Contract] output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -2589,10 +2617,12 @@ ContractApi *apiInstance = [[ContractApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Contract-findById-0-javascript">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
 
 var api = new ViverBemApiDocumentation.ContractApi()
+var uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // {{UUID}} 
+
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -2600,14 +2630,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.findById(callback);
+api.findByUuid(uuid, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Contract-findById-0-angular">
+                            <!--<div class="tab-pane" id="examples-Contract-findByUuid-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Contract-findById-0-csharp">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -2616,22 +2646,23 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class findByIdExample
+    public class findByUuidExample
     {
         public void main()
         {
 
             var apiInstance = new ContractApi();
+            var uuid = new UUID(); // UUID | 
 
             try
             {
                 // Finds a Contract
-                array[Contract] result = apiInstance.findById();
+                array[Contract] result = apiInstance.findByUuid(uuid);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling ContractApi.findById: " + e.Message );
+                Debug.Print("Exception when calling ContractApi.findByUuid: " + e.Message );
             }
         }
     }
@@ -2639,38 +2670,40 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Contract-findById-0-php">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiContractApi();
+$uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // UUID | 
 
 try {
-    $result = $api_instance->findById();
+    $result = $api_instance->findByUuid($uuid);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling ContractApi->findById: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling ContractApi->findByUuid: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Contract-findById-0-perl">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ContractApi;
 
 my $api_instance = WWW::SwaggerClient::ContractApi->new();
+my $uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d; # UUID | 
 
 eval { 
-    my $result = $api_instance->findById();
+    my $result = $api_instance->findByUuid(uuid => $uuid);
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling ContractApi->findById: $@\n";
+    warn "Exception when calling ContractApi->findByUuid: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Contract-findById-0-python">
+                            <div class="tab-pane" id="examples-Contract-findByUuid-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -2679,18 +2712,48 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ContractApi()
+uuid = 38400000-8cf0-11bd-b23e-10b96e4ef00d # UUID | 
 
 try: 
     # Finds a Contract
-    api_response = api_instance.find_by_id1()
+    api_response = api_instance.find_by_uuid(uuid)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling ContractApi->findById: %s\n" % e)</code></pre>
+    print("Exception when calling ContractApi->findByUuid: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
                           <h2>Parameters</h2>
 
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">uuid*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_findByUuid_uuid">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      UUID
+                                                  </span>
+                                                      <span class="format">
+                                                          (uuid)
+                                                      </span>
+                                  
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
 
 
 
@@ -2701,14 +2764,14 @@ except ApiException as e:
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-findById-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-findByUuid-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-findById-200-schema">
-                                  <div id='responses-findById-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="tab-pane active" id="responses-findByUuid-200-schema">
+                                  <div id='responses-findByUuid-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -2738,14 +2801,14 @@ except ApiException as e:
 
                                         //console.log(JSON.stringify(schema));
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-findById-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-findById-200-schema-200');
+                                        $('#responses-findByUuid-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-findByUuid-200-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-findById-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-findByUuid-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -2815,7 +2878,7 @@ public class ContractApiExample {
     public static void main(String[] args) {
         
         ContractApi apiInstance = new ContractApi();
-        ContractRequestDTO body = ; // ContractRequestDTO | 
+        ContractRequestSaveDTO body = ; // ContractRequestSaveDTO | 
         Long apId = 789; // Long | 
         try {
             apiInstance.save(body, apId);
@@ -2834,7 +2897,7 @@ public class ContractApiExample {
 
     public static void main(String[] args) {
         ContractApi apiInstance = new ContractApi();
-        ContractRequestDTO body = ; // ContractRequestDTO | 
+        ContractRequestSaveDTO body = ; // ContractRequestSaveDTO | 
         Long apId = 789; // Long | 
         try {
             apiInstance.save(body, apId);
@@ -2850,7 +2913,7 @@ public class ContractApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Contract-save-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">ContractRequestDTO *body = ; // 
+                              <pre class="prettyprint"><code class="language-cpp">ContractRequestSaveDTO *body = ; // 
 Long *apId = 789; // 
 
 ContractApi *apiInstance = [[ContractApi alloc] init];
@@ -2870,7 +2933,7 @@ ContractApi *apiInstance = [[ContractApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
 
 var api = new ViverBemApiDocumentation.ContractApi()
-var body = ; // {{ContractRequestDTO}} 
+var body = ; // {{ContractRequestSaveDTO}} 
 var apId = 789; // {{Long}} 
 
 var callback = function(error, data, response) {
@@ -2902,7 +2965,7 @@ namespace Example
         {
 
             var apiInstance = new ContractApi();
-            var body = new ContractRequestDTO(); // ContractRequestDTO | 
+            var body = new ContractRequestSaveDTO(); // ContractRequestSaveDTO | 
             var apId = 789;  // Long | 
 
             try
@@ -2925,7 +2988,7 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiContractApi();
-$body = ; // ContractRequestDTO | 
+$body = ; // ContractRequestSaveDTO | 
 $apId = 789; // Long | 
 
 try {
@@ -2942,7 +3005,7 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ContractApi;
 
 my $api_instance = WWW::SwaggerClient::ContractApi->new();
-my $body = WWW::SwaggerClient::Object::ContractRequestDTO->new(); # ContractRequestDTO | 
+my $body = WWW::SwaggerClient::Object::ContractRequestSaveDTO->new(); # ContractRequestSaveDTO | 
 my $apId = 789; # Long | 
 
 eval { 
@@ -2962,7 +3025,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ContractApi()
-body =  # ContractRequestDTO | 
+body =  # ContractRequestSaveDTO | 
 apId = 789 # Long | 
 
 try: 
@@ -2993,7 +3056,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/ContractRequestDTO"
+        "$ref" : "#/components/schemas/ContractRequestSaveDTO"
       }
     }
   },
@@ -3062,6 +3125,288 @@ except ApiException as e:
                             </div>
 
                             <h3> Status: 400 - Bad Request </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Contract-update">
+                      <article id="api-Contract-update-0" data-group="User" data-name="update" data-version="0">
+                        <div class="pull-left">
+                          <h1>update</h1>
+                          <p>Updates a Contract</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/api/v1/contracts</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Contract-update-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Contract-update-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Contract-update-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Contract-update-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Contract-update-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Contract-update-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Contract-update-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "Content-Type: application/json"\
+"http://localhost:8080/api/v1/contracts"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Contract-update-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ContractApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ContractApiExample {
+
+    public static void main(String[] args) {
+        
+        ContractApi apiInstance = new ContractApi();
+        ContractRequestUpdateDTO body = ; // ContractRequestUpdateDTO | 
+        try {
+            apiInstance.update(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ContractApi#update");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Contract-update-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ContractApi;
+
+public class ContractApiExample {
+
+    public static void main(String[] args) {
+        ContractApi apiInstance = new ContractApi();
+        ContractRequestUpdateDTO body = ; // ContractRequestUpdateDTO | 
+        try {
+            apiInstance.update(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ContractApi#update");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Contract-update-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Contract-update-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">ContractRequestUpdateDTO *body = ; // 
+
+ContractApi *apiInstance = [[ContractApi alloc] init];
+
+// Updates a Contract
+[apiInstance updateWith:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Contract-update-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.ContractApi()
+var body = ; // {{ContractRequestUpdateDTO}} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.update(body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Contract-update-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Contract-update-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class updateExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new ContractApi();
+            var body = new ContractRequestUpdateDTO(); // ContractRequestUpdateDTO | 
+
+            try
+            {
+                // Updates a Contract
+                apiInstance.update(body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ContractApi.update: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Contract-update-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiContractApi();
+$body = ; // ContractRequestUpdateDTO | 
+
+try {
+    $api_instance->update($body);
+} catch (Exception $e) {
+    echo 'Exception when calling ContractApi->update: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Contract-update-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ContractApi;
+
+my $api_instance = WWW::SwaggerClient::ContractApi->new();
+my $body = WWW::SwaggerClient::Object::ContractRequestUpdateDTO->new(); # ContractRequestUpdateDTO | 
+
+eval { 
+    $api_instance->update(body => $body);
+};
+if ($@) {
+    warn "Exception when calling ContractApi->update: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Contract-update-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.ContractApi()
+body =  # ContractRequestUpdateDTO | 
+
+try: 
+    # Updates a Contract
+    api_instance.update(body)
+except ApiException as e:
+    print("Exception when calling ContractApi->update: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ContractRequestUpdateDTO"
+      }
+    }
+  },
+  "required" : true
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_update_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_update_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 204 - No Content </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Bad Request </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Not Found </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                             </ul>
