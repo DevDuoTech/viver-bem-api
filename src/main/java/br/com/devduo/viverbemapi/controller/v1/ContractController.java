@@ -1,6 +1,6 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
-import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,7 +90,7 @@ public class ContractController {
     )
     @PostMapping
     public ResponseEntity<String> save(
-            @RequestBody @Valid ContractRequestDTO contractRequestDTO,
+            @RequestBody @Valid ContractRequestSaveDTO contractRequestDTO,
             @RequestParam(value = "ap_id") Long apId
     ) {
         return new ResponseEntity<>(contractService.save(contractRequestDTO, apId), HttpStatus.CREATED);

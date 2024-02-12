@@ -1,7 +1,6 @@
 package br.com.devduo.viverbemapi.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -27,8 +26,4 @@ public class ContractRequestDTO {
     @Positive(message = "{field.price.invalid}")
     private BigDecimal price;
     private String description;
-
-    @Valid
-    @NotNull(message = "{field.tenant.required}")
-    private TenantsRequestDTO tenantsRequestDTO;
 }

@@ -2,6 +2,7 @@ package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.ContractController;
 import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
 import br.com.devduo.viverbemapi.enums.StatusApart;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
@@ -50,16 +51,19 @@ public class ContractService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this ID"));
     }
 
-    public String save(ContractRequestDTO contractRequestDto, Long numberAp) {
-        if (contractRequestDto == null)
+    public String save(ContractRequestSaveDTO dto, Long numberAp) {
+        if (dto == null)
             throw new BadRequestException("ContractDTO cannot be null");
-        if (contractRequestDto.getTenantsRequestDTO() == null)
-            throw new BadRequestException("TenantDTO cannot be null");
         if (numberAp == null)
             throw new BadRequestException("Apartment ID cannot be null");
 
-        TenantsRequestDTO tenantDto = contractRequestDto.getTenantsRequestDTO();
+        ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
+        TenantsRequestDTO tenantDto = dto.getTenantsRequestDTO();
         Apartment apartment = apartmentService.findByNumberAp(numberAp);
+
+        if (apartment.getStatus().equals(StatusApart.OCCUPIED))
+            throw new BadRequestException("Apartment %d is currently occupied".formatted(apartment.getNumberAp()));
+
         apartment.setStatus(StatusApart.OCCUPIED);
 
         Tenant tenant = Tenant.builder()
@@ -73,10 +77,10 @@ public class ContractService {
                 .build();
 
         Contract contract = Contract.builder()
-                .startDate(contractRequestDto.getStartDate())
-                .endDate(contractRequestDto.getEndDate())
-                .price(contractRequestDto.getPrice())
-                .description(contractRequestDto.getDescription())
+                .startDate(contractRequestDTO.getStartDate())
+                .endDate(contractRequestDTO.getEndDate())
+                .price(contractRequestDTO.getPrice())
+                .description(contractRequestDTO.getDescription())
                 .apartment(apartment)
                 .build();
 
