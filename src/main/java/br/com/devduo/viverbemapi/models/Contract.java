@@ -19,8 +19,8 @@ import java.util.UUID;
 public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private UUID id;
+    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    private UUID uuid;
     @Column(name = "start_date")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate startDate;

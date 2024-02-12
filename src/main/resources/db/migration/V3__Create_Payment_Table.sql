@@ -8,11 +8,11 @@ CREATE TABLE payment (
 );
 
 CREATE TABLE payment_contract (
-   contract_id UUID,
+   contract_uuid UUID,
    payment_id BIGINT NOT NULL,
    CONSTRAINT pk_payment_contract PRIMARY KEY (payment_id)
 );
 
-ALTER TABLE payment_contract ADD CONSTRAINT fk_paycon_on_contract FOREIGN KEY (contract_id) REFERENCES contract (id);
+ALTER TABLE payment_contract ADD CONSTRAINT fk_paycon_on_contract FOREIGN KEY (contract_uuid) REFERENCES contract (uuid);
 
 ALTER TABLE payment_contract ADD CONSTRAINT fk_paycon_on_payment FOREIGN KEY (payment_id) REFERENCES payment (id);
