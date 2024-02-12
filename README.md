@@ -12,8 +12,8 @@
 
 Before running the project, make sure you have the following dependencies installed:
 
-- `Java 17`
-- `Apache Maven 3.9.2`
+- `JDK 17+`
+- `Apache Maven 3.9+`
 - `Docker`
 
 ## How to run
