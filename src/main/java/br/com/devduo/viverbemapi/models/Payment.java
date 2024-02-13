@@ -25,7 +25,11 @@ public class Payment {
     @NotEmpty
     private BigDecimal price;
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @Column(name = "due_date")
     private LocalDate dueDate;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @Column(name = "payment_date")
+    private LocalDate paymentDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type")
     private PaymentType paymentType;
