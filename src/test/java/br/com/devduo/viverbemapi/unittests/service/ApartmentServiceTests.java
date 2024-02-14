@@ -89,6 +89,46 @@ public class ApartmentServiceTests {
         assertEquals(expectedApartment.getNumberAp(), resultApartment.getNumberAp());
         assertEquals(expectedApartment.getStatus(), resultApartment.getStatus());
     }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    @DisplayName("Find all available Apartments and return a PagedModel of the available Apartments successfully")
+    public void testFindAllWithoutArgsSuccessfully() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+
+        Apartment apartment1 = mockAvailableApartment();
+        Apartment apartment2 = mockOccupiedApartment();
+        List<Apartment> apartmentList = Arrays.asList(apartment1, apartment2);
+        Page<Apartment> page = new PageImpl<>(apartmentList);
+
+        Mockito.when(apartmentRepository.findAll(pageable)).thenReturn(page);
+
+        EntityModel<Apartment> entityModel1 = EntityModel.of(apartment1);
+        EntityModel<Apartment> entityModel2 = EntityModel.of(apartment2);
+        List<EntityModel<Apartment>> entityModels = Arrays.asList(entityModel1, entityModel2);
+        PagedModel<EntityModel<Apartment>> expectedPagedModel = PagedModel.of(entityModels,
+                new PagedModel.PageMetadata(entityModels.size(), 0, 2));
+
+        Mockito.when(assembler.toModel(any(Page.class), any(Link.class))).thenReturn(expectedPagedModel);
+
+        PagedModel<EntityModel<Apartment>> result = apartmentService.findAll(pageable, null);
+
+        Mockito.verify(apartmentRepository).findAll(pageable);
+
+        assertEquals(expectedPagedModel, result);
+
+        List<EntityModel<Apartment>> expectedList = expectedPagedModel.getContent().stream().toList();
+        Apartment expectedApartment = expectedList.get(0).getContent();
+
+        List<EntityModel<Apartment>> resultList = result.getContent().stream().toList();
+        Apartment resultApartment = resultList.get(0).getContent();
+
+        assertEquals(expectedList.size(), resultList.size());
+
+        assertEquals(expectedApartment.getDescription(), resultApartment.getDescription());
+        assertEquals(expectedApartment.getNumberAp(), resultApartment.getNumberAp());
+        assertEquals(expectedApartment.getStatus(), resultApartment.getStatus());
+    }
 
     @Test
     @DisplayName("Finds a Apartment by ID and returns a apartment successfully")
