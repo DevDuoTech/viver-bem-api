@@ -33,9 +33,10 @@ import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
+import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 
 @ExtendWith(MockitoExtension.class)
-public class ApartmentServiceTests {
+public class ApartmentServiceTest {
     @InjectMocks
     private ApartmentService apartmentService;
     @Mock
@@ -47,17 +48,17 @@ public class ApartmentServiceTests {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
-    @DisplayName("Find all available Apartments and return a PagedModel of the available Apartments successfully")
+    @DisplayName("Finds all available Apartments and return a PagedModel of the available Apartments successfully")
     public void testFindAllWithArgsSuccessfully() {
         Pageable pageable = Mockito.mock(Pageable.class);
 
         StatusApart statusApart = StatusApart.AVAILABLE;
 
-        Apartment apartment1 = mockAvailableApartment();
-        Apartment apartment2 = mockOccupiedApartment();
+        Apartment apartment1 = ApartmentMocks.mockAvailableApartment();
+        Apartment apartment2 = ApartmentMocks.mockOccupiedApartment();
         List<Apartment> apartmentList = Arrays.asList(apartment1, apartment2);
         Page<Apartment> page = new PageImpl<>(apartmentList);
 
@@ -89,15 +90,15 @@ public class ApartmentServiceTests {
         assertEquals(expectedApartment.getNumberAp(), resultApartment.getNumberAp());
         assertEquals(expectedApartment.getStatus(), resultApartment.getStatus());
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
-    @DisplayName("Find all available Apartments and return a PagedModel of the available Apartments successfully")
+    @DisplayName("Finds all available Apartments and return a PagedModel of the available Apartments successfully")
     public void testFindAllWithoutArgsSuccessfully() {
         Pageable pageable = Mockito.mock(Pageable.class);
 
-        Apartment apartment1 = mockAvailableApartment();
-        Apartment apartment2 = mockOccupiedApartment();
+        Apartment apartment1 = ApartmentMocks.mockAvailableApartment();
+        Apartment apartment2 = ApartmentMocks.mockOccupiedApartment();
         List<Apartment> apartmentList = Arrays.asList(apartment1, apartment2);
         Page<Apartment> page = new PageImpl<>(apartmentList);
 
@@ -133,7 +134,7 @@ public class ApartmentServiceTests {
     @Test
     @DisplayName("Finds a Apartment by ID and returns a apartment successfully")
     public void testFindByIdSuccessfully() {
-        Apartment mockedApartment = mockOccupiedApartment();
+        Apartment mockedApartment = ApartmentMocks.mockOccupiedApartment();
 
         when(apartmentRepository.findById(1L)).thenReturn(Optional.of(mockedApartment));
 
@@ -164,7 +165,7 @@ public class ApartmentServiceTests {
     @Test
     @DisplayName("Finds a Apartment by number and returns a apartment successfully")
     public void testFindByNumberApSuccessfully() {
-        Apartment mockApartment = mockOccupiedApartment();
+        Apartment mockApartment = ApartmentMocks.mockOccupiedApartment();
 
         when(apartmentRepository.findByNumberAp(500L)).thenReturn(mockApartment);
 
@@ -200,7 +201,7 @@ public class ApartmentServiceTests {
         requestDTO.setDescription("Updated Description");
         requestDTO.setStatus(StatusApart.AVAILABLE);
 
-        Apartment existingApartment = mockOccupiedApartment();
+        Apartment existingApartment = ApartmentMocks.mockOccupiedApartment();
         existingApartment.setDescription("Old Description");
 
         Mockito.when(apartmentRepository.findById(1L)).thenReturn(java.util.Optional.of(existingApartment));
@@ -216,7 +217,7 @@ public class ApartmentServiceTests {
     @Test
     @DisplayName("Update Apartment status to Available successfully")
     public void testUpdateStatusToAvailable() {
-        Apartment existingApartment = mockOccupiedApartment();
+        Apartment existingApartment = ApartmentMocks.mockOccupiedApartment();
 
         Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(existingApartment);
 
@@ -230,7 +231,7 @@ public class ApartmentServiceTests {
     @Test
     @DisplayName("Update Apartment status to Occupied successfully")
     public void testUpdateStatusToOccupied() {
-        Apartment existingApartment = mockAvailableApartment();
+        Apartment existingApartment = ApartmentMocks.mockAvailableApartment();
 
         Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(existingApartment);
 
@@ -239,23 +240,5 @@ public class ApartmentServiceTests {
         Mockito.verify(apartmentRepository).save(existingApartment);
 
         assertEquals(StatusApart.OCCUPIED, existingApartment.getStatus());
-    }
-
-    public Apartment mockOccupiedApartment() {
-        return Apartment.builder()
-                .id(1L)
-                .description("A random apartment")
-                .numberAp(500L)
-                .status(StatusApart.OCCUPIED)
-                .build();
-    }
-
-    public Apartment mockAvailableApartment() {
-        return Apartment.builder()
-                .id(1L)
-                .description("A random apartment")
-                .numberAp(500L)
-                .status(StatusApart.AVAILABLE)
-                .build();
     }
 }

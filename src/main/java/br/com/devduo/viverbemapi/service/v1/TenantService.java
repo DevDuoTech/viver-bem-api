@@ -1,10 +1,8 @@
 package br.com.devduo.viverbemapi.service.v1;
 
-import br.com.devduo.viverbemapi.controller.v1.TenantController;
-import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
-import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
-import br.com.devduo.viverbemapi.models.Tenant;
-import br.com.devduo.viverbemapi.repository.TenantRepository;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +12,12 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import br.com.devduo.viverbemapi.controller.v1.TenantController;
+import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
 
 @Service
 public class TenantService {
@@ -39,11 +41,13 @@ public class TenantService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
 
-    public Tenant save(Tenant tenant){
+    public Tenant save(Tenant tenant) {
+        if(tenant == null)
+            throw new BadRequestException("Tenant cannot be null");
         return tenantRepository.save(tenant);
     }
 
-    public void update(TenantsRequestDTO dto){
+    public void update(TenantsRequestDTO dto) {
         Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
 
@@ -54,7 +58,7 @@ public class TenantService {
         tenantRepository.save(tenantToUpdate);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         Tenant tenant = findById(id);
         tenantRepository.delete(tenant);
     }
