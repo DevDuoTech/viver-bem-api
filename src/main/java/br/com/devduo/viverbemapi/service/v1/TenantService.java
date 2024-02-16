@@ -37,6 +37,8 @@ public class TenantService {
     }
 
     public Tenant findById(Long id) {
+        if (id == null)
+            throw new BadRequestException("Tenant ID cannot be null");
         return tenantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
@@ -48,6 +50,9 @@ public class TenantService {
     }
 
     public void update(TenantsRequestDTO dto) {
+        if(dto == null)
+            throw new BadRequestException("Tenant cannot be null");
+
         Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
 

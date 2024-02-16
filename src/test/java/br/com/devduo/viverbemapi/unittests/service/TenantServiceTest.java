@@ -1,11 +1,16 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import br.com.devduo.viverbemapi.exceptions.BadRequestException;
-import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
-import br.com.devduo.viverbemapi.models.Tenant;
-import br.com.devduo.viverbemapi.repository.TenantRepository;
-import br.com.devduo.viverbemapi.service.v1.TenantService;
-import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,14 +28,13 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
+import br.com.devduo.viverbemapi.service.v1.TenantService;
+import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 
 @ExtendWith(MockitoExtension.class)
 public class TenantServiceTest {
@@ -48,6 +52,7 @@ public class TenantServiceTest {
 
     @Test
     @DisplayName("Finds all Tenants and return a PagedModel of Tenants successfully")
+    @SuppressWarnings("unchecked")
     public void testFindAllSuccessfully() {
         Pageable pageable = Mockito.mock(Pageable.class);
         Tenant mockedTenant = TenantMocks.mockTenant();
@@ -106,13 +111,26 @@ public class TenantServiceTest {
     }
 
     @Test
-    @DisplayName("Tries to find a Tenant by ID and throws a ResourceNotFoundException")
+    @DisplayName("Tries to find a non-existent Tenant by ID and throws a ResourceNotFoundException")
     public void testFindByIdAndThrowsNotFound() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.findById(1L);
         });
 
         String expectedMessage = "No records found for this ID";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to find a Tenant with null ID and throws a BadRequestException")
+    public void testFindByIdWithNull() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.findById(null);
+        });
+
+        String expectedMessage = "Tenant ID cannot be null";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
@@ -145,6 +163,72 @@ public class TenantServiceTest {
         });
 
         String expectedMessage = "Tenant cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Update a Tenant successfully")
+    public void testUpdateSuccessfully() {
+        TenantsRequestDTO updatedTenant = TenantMocks.mockTenantDTO();
+        Tenant existentTenant = TenantMocks.mockTenant();
+
+        when(repository.findByCPF(updatedTenant.getCpf())).thenReturn(Optional.of(existentTenant));
+
+        service.update(updatedTenant);
+
+        verify(repository).save(existentTenant);
+
+        assertEquals(updatedTenant.getName(), existentTenant.getName());
+        assertEquals(updatedTenant.getCpf(), existentTenant.getCpf());
+        assertEquals(updatedTenant.getPhone(), existentTenant.getPhone());
+    }
+
+    @Test
+    @DisplayName("Update a null Tenant and throws an BadRequestException")
+    public void testUpdateWithNull() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.update(null);
+        });
+
+        String expectedMessage = "Tenant cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Update a non-existent Tenant and throws an ResourceNotFoundException")
+    public void testUpdateNonExistent() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            service.update(TenantMocks.mockTenantDTO());
+        });
+
+        String expectedMessage = "No records found for this CPF";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Delete a Tenant successfully")
+    public void testDeleteSuccessfully() {
+        Tenant existentTenant = TenantMocks.mockTenant();
+        when(repository.findById(existentTenant.getId())).thenReturn(Optional.of(existentTenant));
+
+        service.delete(existentTenant.getId());
+        verify(repository).delete(existentTenant);
+    }
+
+    @Test
+    @DisplayName("Delete a non-existent Tenant and throws a ResourceNotFoundException")
+    public void testDeleteNonExistent() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            service.delete(1L);
+        });
+
+        String expectedMessage = "No records found for this ID";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
