@@ -137,8 +137,50 @@ public class TenantServiceTest {
     }
 
     @Test
+    @DisplayName("Tries to find a Tenant with CPF and retuns a Tenant successfully")
+    public void testFindByCPFSuccessfully() {
+        Tenant existentTenant = TenantMocks.mockTenant();
+
+        when(repository.findByCPF("foo")).thenReturn(Optional.of(existentTenant));
+
+        Tenant result = service.findByCPF("foo");
+
+        assertNotNull(result);
+        assertNotNull(result.getCpf());
+        assertEquals(existentTenant.getCpf(), result.getCpf());
+        assertEquals(existentTenant.getName(), result.getName());
+        assertEquals(existentTenant.getRg(), result.getRg());
+    }
+
+    @Test
+    @DisplayName("Tries to find a Tenant with null CPF and throws a BadRequestException")
+    public void testFindByCPFWithNull() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.findByCPF(null);
+        });
+
+        String expectedMessage = "Tenant CPF cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to find a Tenant with CPF that does not exist and throws a ResourceNotFoundException")
+    public void testFindByCPFAndThrowsNotFound() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            service.findByCPF("foo");
+        });
+        
+        String expectedMessage = "No records found for this CPF";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     @DisplayName("Persist a new Tenant and returns a Tenant successfully")
-    public void testSaveSuccessully() {
+    public void testSaveSuccessfully() {
         Tenant persistedTenant = TenantMocks.mockTenant();
 
         when(repository.save(persistedTenant)).thenReturn(persistedTenant);

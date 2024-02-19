@@ -43,14 +43,21 @@ public class TenantService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
 
+    public Tenant findByCPF(String cpf) {
+        if (cpf == null)
+            throw new BadRequestException("Tenant CPF cannot be null");
+        return tenantRepository.findByCPF(cpf)
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
+    }
+
     public Tenant save(Tenant tenant) {
-        if(tenant == null)
+        if (tenant == null)
             throw new BadRequestException("Tenant cannot be null");
         return tenantRepository.save(tenant);
     }
 
     public void update(TenantsRequestDTO dto) {
-        if(dto == null)
+        if (dto == null)
             throw new BadRequestException("Tenant cannot be null");
 
         Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf())

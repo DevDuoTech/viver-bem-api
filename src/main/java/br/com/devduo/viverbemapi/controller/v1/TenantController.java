@@ -65,7 +65,7 @@ public class TenantController {
 
     @Operation(
             summary = "Finds a Tenant",
-            description = "Finds a Tenant",
+            description = "Finds a Tenant by ID",
             tags = {"Tenant"},
             responses = {
                     @ApiResponse(
@@ -76,6 +76,7 @@ public class TenantController {
                                     array = @ArraySchema(schema = @Schema(implementation = Tenant.class))
                             )
                             }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
@@ -83,6 +84,29 @@ public class TenantController {
     @GetMapping("/{id}")
     public ResponseEntity<Tenant> findById(@PathVariable(value = "id") Long id){
         return ResponseEntity.ok(tenantService.findById(id));
+    }
+    
+    @Operation(
+            summary = "Finds a Tenant",
+            description = "Finds a Tenant by CPF",
+            tags = {"Tenant"},
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = {@Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = Tenant.class))
+                            )
+                            }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
+            }
+    )
+    @GetMapping("/by-cpf")
+    public ResponseEntity<Tenant> findByCPF(@RequestParam(value = "cpf") String cpf){
+        return ResponseEntity.ok(tenantService.findByCPF(cpf));
     }
 
     @Operation(
