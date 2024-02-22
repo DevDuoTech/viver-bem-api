@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,14 +29,15 @@ public class Tenant {
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "birth_date")
     private LocalDate birthDate;
-    @Column(name = "birth_state")
-    private String birthState;
+    @Column(name = "birth_local")
+    private String birthLocal;
+    @Column(name = "is_active")
+    private Boolean isActive;
 
-    @ManyToOne
-    @JoinTable(
-            name = "tenant_apartment",
-            joinColumns = @JoinColumn(name = "tenant_id"),
-            inverseJoinColumns = @JoinColumn(name = "apartment_id")
-    )
-    private Apartment apartment;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contract_id", referencedColumnName = "uuid")
+    private Contract contract;
+
+    @OneToMany(mappedBy = "tenant")
+    private List<Payment> payments;
 }

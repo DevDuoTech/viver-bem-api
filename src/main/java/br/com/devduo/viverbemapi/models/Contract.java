@@ -29,6 +29,10 @@ public class Contract {
     private LocalDate endDate;
     private BigDecimal price;
     private String description;
+
+    @OneToOne(mappedBy = "contract")
+    private Tenant tenant;
+
     @ManyToOne
     @JoinTable(
             name = "contract_apartment",

@@ -38,10 +38,6 @@ public class Payment {
     private PaymentStatus paymentStatus;
 
     @ManyToOne
-    @JoinTable(
-            name = "payment_contract",
-            joinColumns = @JoinColumn(name = "payment_id"),
-            inverseJoinColumns = @JoinColumn(name = "contract_id")
-    )
-    private Contract contract;
+    @JoinColumn(name = "tenant_id", nullable=false)
+    private Tenant tenant;
 }

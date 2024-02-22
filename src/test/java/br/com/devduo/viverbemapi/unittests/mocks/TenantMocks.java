@@ -14,8 +14,8 @@ public class TenantMocks {
                 .phone("999999999")
                 .rg("111111111")
                 .birthDate(LocalDate.of(1995, 5, 20))
-                .birthState("São Paulo")
-                .apartment(ApartmentMocks.mockOccupiedApartment())
+                .birthLocal("São Paulo")
+//                .apartment(ApartmentMocks.mockOccupiedApartment())
                 .build();
     }
 

@@ -74,8 +74,7 @@ public class ContractService {
                 .phone(tenantDto.getPhone())
                 .rg(tenantDto.getRg())
                 .birthDate(tenantDto.getBirthDate())
-                .birthState(tenantDto.getBirthState())
-                .apartment(apartment)
+                .birthLocal(tenantDto.getBirthState())
                 .build();
 
         Contract contract = Contract.builder()
