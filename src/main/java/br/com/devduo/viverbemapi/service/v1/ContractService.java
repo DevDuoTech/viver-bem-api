@@ -75,6 +75,7 @@ public class ContractService {
                 .rg(tenantDto.getRg())
                 .birthDate(tenantDto.getBirthDate())
                 .birthLocal(tenantDto.getBirthState())
+                .isActive(true)
                 .build();
 
         Contract contract = Contract.builder()
@@ -83,7 +84,10 @@ public class ContractService {
                 .price(contractRequestDTO.getPrice())
                 .description(contractRequestDTO.getDescription())
                 .apartment(apartment)
+                .tenant(tenant)
                 .build();
+
+        tenant.setContract(contract);
 
         tenantService.save(tenant);
         contractRepository.save(contract);

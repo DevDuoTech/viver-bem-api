@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,7 @@ public class Tenant {
     private Boolean isActive;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"tenant"})
     @JoinColumn(name = "contract_id", referencedColumnName = "uuid")
     private Contract contract;
 

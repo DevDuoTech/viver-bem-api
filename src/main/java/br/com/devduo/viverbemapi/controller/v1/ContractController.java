@@ -100,9 +100,9 @@ public class ContractController {
     @PostMapping
     public ResponseEntity<String> save(
             @RequestBody @Valid ContractRequestSaveDTO contractRequestDTO,
-            @RequestParam(value = "ap_id") Long apId
+            @RequestParam(value = "num_ap") Long numAp
     ) {
-        return new ResponseEntity<>(contractService.save(contractRequestDTO, apId), HttpStatus.CREATED);
+        return new ResponseEntity<>(contractService.save(contractRequestDTO, numAp), HttpStatus.CREATED);
     }
 
     @Operation(
