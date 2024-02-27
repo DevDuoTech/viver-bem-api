@@ -30,6 +30,9 @@ public class Contract {
     private LocalDate endDate;
     private BigDecimal price;
     private String description;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @Column(name = "due_date")
+    private LocalDate dueDate;
 
     @JsonIgnoreProperties({"tenant"})
     @OneToOne(mappedBy = "contract")

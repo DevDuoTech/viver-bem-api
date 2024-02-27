@@ -40,6 +40,7 @@ public class Tenant {
     @JoinColumn(name = "contract_id", referencedColumnName = "uuid")
     private Contract contract;
 
+    @JsonIgnoreProperties({"tenant"})
     @OneToMany(mappedBy = "tenant")
     private List<Payment> payments;
 }

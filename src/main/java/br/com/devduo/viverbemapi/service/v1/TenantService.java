@@ -3,8 +3,11 @@ package br.com.devduo.viverbemapi.service.v1;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import br.com.devduo.viverbemapi.models.Payment;
+import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -19,21 +22,56 @@ import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class TenantService {
     @Autowired
     private TenantRepository tenantRepository;
     @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
     private PagedResourcesAssembler<Tenant> assembler;
 
-    public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable) {
+    public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable, String name, List<YearMonth> yearMonths, Boolean isActive) {
         Page<Tenant> tenantsPage = tenantRepository.findAll(pageable);
 
+        List<Tenant> tenantList = tenantsPage.get().toList();
+
+        if (name != null) {
+            tenantList = tenantList.stream()
+                    .filter(t -> t.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (yearMonths != null && !yearMonths.isEmpty()) {
+            tenantList = tenantList.stream()
+                    .filter(t -> hasPaymentInMonthsAndYears(t, yearMonths))
+                    .collect(Collectors.toList());
+        }
+
+        if (!isActive)
+            tenantList = tenantList.stream()
+                    .filter(t -> t.getIsActive().equals(false))
+                    .collect(Collectors.toList());
+
+        Page<Tenant> tenantFiltered = new PageImpl<>(tenantList);
+
         Link link = linkTo(methodOn(TenantController.class)
-                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .findAll(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "desc",
+                        name,
+                        yearMonths,
+                        isActive
+                ))
                 .withSelfRel();
 
-        return assembler.toModel(tenantsPage, link);
+        return assembler.toModel(tenantFiltered, link);
     }
 
     public Tenant findById(Long id) {
@@ -74,4 +112,15 @@ public class TenantService {
         Tenant tenant = findById(id);
         tenantRepository.delete(tenant);
     }
+
+    private boolean hasPaymentInMonthsAndYears(Tenant tenant, List<YearMonth> yearMonths) {
+        List<Payment> payments = paymentRepository.findByTenantId(tenant.getId());
+
+        return payments.stream().anyMatch(payment -> {
+            LocalDate paymentDate = payment.getPaymentDate();
+            YearMonth paymentYearMonth = YearMonth.from(paymentDate);
+            return yearMonths.contains(paymentYearMonth);
+        });
+    }
+
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.time.YearMonth;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tenants")
@@ -56,11 +60,14 @@ public class TenantController {
     public ResponseEntity<PagedModel<EntityModel<Tenant>>> findAll(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
-            @RequestParam(value = "direction", defaultValue = "asc") String direction
-    ){
+            @RequestParam(value = "direction", defaultValue = "desc") String direction,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy_MM") List<YearMonth> yearMonth,
+            @RequestParam(value = "is_active", defaultValue = "true") Boolean isActive
+    ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "name"));
-        return ResponseEntity.ok(tenantService.findAll(pageable));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "payments.paymentDate"));
+        return ResponseEntity.ok(tenantService.findAll(pageable, name, yearMonth, isActive));
     }
 
     @Operation(
@@ -82,10 +89,10 @@ public class TenantController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Tenant> findById(@PathVariable(value = "id") Long id){
+    public ResponseEntity<Tenant> findById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(tenantService.findById(id));
     }
-    
+
     @Operation(
             summary = "Finds a Tenant",
             description = "Finds a Tenant by CPF",
@@ -105,7 +112,7 @@ public class TenantController {
             }
     )
     @GetMapping("/by-cpf")
-    public ResponseEntity<Tenant> findByCPF(@RequestParam(value = "cpf") String cpf){
+    public ResponseEntity<Tenant> findByCPF(@RequestParam(value = "cpf") String cpf) {
         return ResponseEntity.ok(tenantService.findByCPF(cpf));
     }
 
@@ -123,7 +130,7 @@ public class TenantController {
             }
     )
     @PostMapping
-    public ResponseEntity<Tenant> save(@RequestBody @Valid Tenant tenant){
+    public ResponseEntity<Tenant> save(@RequestBody @Valid Tenant tenant) {
         return new ResponseEntity<>(tenantService.save(tenant), HttpStatus.CREATED);
     }
 
@@ -138,7 +145,7 @@ public class TenantController {
             }
     )
     @PutMapping
-    public ResponseEntity<Void> update(@RequestBody @Valid TenantsRequestDTO dto){
+    public ResponseEntity<Void> update(@RequestBody @Valid TenantsRequestDTO dto) {
         tenantService.update(dto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -154,7 +161,7 @@ public class TenantController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id){
+    public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id) {
         tenantService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
