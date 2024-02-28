@@ -3,6 +3,7 @@ package br.com.devduo.viverbemapi.models;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -35,6 +36,7 @@ public class Payment {
     private PaymentStatus paymentStatus;
 
     @ManyToOne
+    @JsonIgnore
     @JsonIgnoreProperties({"tenant"})
     @JoinColumn(name = "tenant_id", nullable=false)
     private Tenant tenant;

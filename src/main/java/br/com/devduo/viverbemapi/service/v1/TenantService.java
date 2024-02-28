@@ -1,10 +1,11 @@
 package br.com.devduo.viverbemapi.service.v1;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import br.com.devduo.viverbemapi.models.Payment;
-import br.com.devduo.viverbemapi.repository.PaymentRepository;
+import br.com.devduo.viverbemapi.controller.v1.TenantController;
+import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,28 +16,23 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import br.com.devduo.viverbemapi.controller.v1.TenantController;
-import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
-import br.com.devduo.viverbemapi.exceptions.BadRequestException;
-import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
-import br.com.devduo.viverbemapi.models.Tenant;
-import br.com.devduo.viverbemapi.repository.TenantRepository;
-
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class TenantService {
     @Autowired
     private TenantRepository tenantRepository;
     @Autowired
-    private PaymentRepository paymentRepository;
+    private PaymentService paymentService;
     @Autowired
     private PagedResourcesAssembler<Tenant> assembler;
 
-    public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable, String name, List<YearMonth> yearMonths, Boolean isActive) {
+    public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable, String name, YearMonth yearMonth, Boolean isActive) {
         Page<Tenant> tenantsPage = tenantRepository.findAll(pageable);
 
         List<Tenant> tenantList = tenantsPage.get().toList();
@@ -47,9 +43,11 @@ public class TenantService {
                     .collect(Collectors.toList());
         }
 
-        if (yearMonths != null && !yearMonths.isEmpty()) {
+        if (yearMonth != null) {
             tenantList = tenantList.stream()
-                    .filter(t -> hasPaymentInMonthsAndYears(t, yearMonths))
+                    .filter(t -> paymentService.findByYearMonth(yearMonth).stream()
+                            .anyMatch(p -> t.getPayments().contains(p))
+                    )
                     .collect(Collectors.toList());
         }
 
@@ -66,7 +64,7 @@ public class TenantService {
                         pageable.getPageSize(),
                         "desc",
                         name,
-                        yearMonths,
+                        yearMonth,
                         isActive
                 ))
                 .withSelfRel();
@@ -111,16 +109,6 @@ public class TenantService {
     public void delete(Long id) {
         Tenant tenant = findById(id);
         tenantRepository.delete(tenant);
-    }
-
-    private boolean hasPaymentInMonthsAndYears(Tenant tenant, List<YearMonth> yearMonths) {
-        List<Payment> payments = paymentRepository.findByTenantId(tenant.getId());
-
-        return payments.stream().anyMatch(payment -> {
-            LocalDate paymentDate = payment.getPaymentDate();
-            YearMonth paymentYearMonth = YearMonth.from(paymentDate);
-            return yearMonths.contains(paymentYearMonth);
-        });
     }
 
 }

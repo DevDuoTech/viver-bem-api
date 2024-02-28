@@ -62,7 +62,7 @@ public class TenantController {
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "desc") String direction,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy_MM") List<YearMonth> yearMonth,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy_MM") YearMonth yearMonth,
             @RequestParam(value = "is_active", defaultValue = "true") Boolean isActive
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;

@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public class Tenant {
     @JoinColumn(name = "contract_id", referencedColumnName = "uuid")
     private Contract contract;
 
+    @JsonIgnore
     @JsonIgnoreProperties({"tenant"})
     @OneToMany(mappedBy = "tenant")
     private List<Payment> payments;
