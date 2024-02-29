@@ -32,8 +32,8 @@ git clone https://github.com/DevDuoTech/viver-bem-api
 Create a ``.env`` in root folder with following variables
 
 ````bash
-DB_USERNAME=example
-DB_PASSWORD=example
+DB_USERNAME=viverbem
+DB_PASSWORD=viverbem
 
 PGADMIN_USERNAME=example@example.com
 PGADMIN_PASSWORD=example
