@@ -16,6 +16,7 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
           echo "SPRING_CONFIG_IMPORT=optional:file:.env[.properties]" >> $GITHUB_ENV
 
       - uses: harmon758/postgresql-action@v1
@@ -47,6 +48,7 @@ jobs:
           echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> .env
           echo "spring.jpa.hibernate.ddl-auto=update" >> .env
           echo "spring.jpa.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect" >> .env
+          echo "security.jwt.token.secret" >> .env
 
           mvn clean package
 
