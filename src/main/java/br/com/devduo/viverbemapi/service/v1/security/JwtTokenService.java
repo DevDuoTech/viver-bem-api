@@ -5,6 +5,7 @@ import br.com.devduo.viverbemapi.models.Role;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +80,15 @@ public class JwtTokenService {
                 .require(Algorithm.HMAC256(SECRET_KEY))
                 .build();
         return jwtVerifier.verify(token);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            DecodedJWT decodedJWT = decodedJWT(token);
+            return new Date().before(decodedJWT.getExpiresAt());
+        } catch (JWTVerificationException exception) {
+            return false;
+        }
     }
 
     public Authentication getAuthentication(String token) {
