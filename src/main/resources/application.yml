@@ -13,6 +13,12 @@ spring:
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
 
+security:
+  jwt:
+    token:
+      secret: ${SECRET_KEY}
+      time: 3600000
+
 springdoc:
   pathsToMatch: /api/**/v1/**
   swagger-ui:
