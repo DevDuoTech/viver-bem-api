@@ -70,7 +70,7 @@ public class JwtTokenService {
     }
 
     public String formatToken(String token) {
-        if (token.startsWith("Bearer "))
+        if (token != null && token.startsWith("Bearer "))
             return token.substring("Bearer ".length());
         return null;
     }
