@@ -4,7 +4,6 @@ import br.com.devduo.viverbemapi.dtos.LoginRequestDTO;
 import br.com.devduo.viverbemapi.dtos.RegisterRequestDTO;
 import br.com.devduo.viverbemapi.dtos.TokenDTO;
 import br.com.devduo.viverbemapi.enums.RoleEnum;
-import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Role;
 import br.com.devduo.viverbemapi.models.User;
