@@ -37,7 +37,10 @@ DB_PASSWORD=viverbem
 
 PGADMIN_USERNAME=example@example.com
 PGADMIN_PASSWORD=example
+
+SECRET_KEY=****.****.*****=
 ````
+**Generate your own secret key**
 
 ### Run the Project
 
@@ -69,6 +72,7 @@ The project folder structure is organized as follows:
 |   |   |   |   |-- dtos
 |   |   |   |   |-- enums
 |   |   |   |   |-- exceptions
+|   |   |   |   |-- filter
 |   |   |   |   |-- handler
 |   |   |   |   |-- models
 |   |   |   |   |-- repository
