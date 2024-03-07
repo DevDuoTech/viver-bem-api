@@ -83,6 +83,7 @@ public class ContractService {
                 .endDate(contractRequestDTO.getEndDate())
                 .price(contractRequestDTO.getPrice())
                 .description(contractRequestDTO.getDescription())
+                .hasGuarantee(contractRequestDTO.getHasGuarantee())
                 .apartment(apartment)
                 .tenant(tenant)
                 .build();

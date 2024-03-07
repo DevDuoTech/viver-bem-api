@@ -33,6 +33,8 @@ public class Contract {
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "due_date")
     private LocalDate dueDate;
+    @Column(name = "has_guarantee")
+    private Boolean hasGuarantee;
 
     @JsonIgnoreProperties({"tenant"})
     @OneToOne(mappedBy = "contract")

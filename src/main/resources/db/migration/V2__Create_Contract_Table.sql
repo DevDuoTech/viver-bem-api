@@ -5,6 +5,7 @@ CREATE TABLE contract (
    price DECIMAL,
    description VARCHAR(255),
    due_date date,
+   has_guarantee BOOLEAN,
    CONSTRAINT pk_contract PRIMARY KEY (uuid)
 );
 
