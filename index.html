@@ -747,13 +747,23 @@
     "description" : {
       "type" : "string"
     },
+    "dueDate" : {
+      "type" : "string",
+      "format" : "date"
+    },
+    "hasGuarantee" : {
+      "type" : "boolean"
+    },
+    "tenant" : {
+      "$ref" : "#/components/schemas/Tenant"
+    },
     "apartment" : {
       "$ref" : "#/components/schemas/Apartment"
     }
   }
 };
             defs["ContractRequestDTO"] = {
-  "required" : [ "endDate", "price", "startDate" ],
+  "required" : [ "endDate", "hasGuarantee", "price", "startDate" ],
   "type" : "object",
   "properties" : {
     "startDate" : {
@@ -766,6 +776,9 @@
     },
     "price" : {
       "type" : "number"
+    },
+    "hasGuarantee" : {
+      "type" : "boolean"
     },
     "description" : {
       "type" : "string"
@@ -797,6 +810,59 @@
     }
   }
 };
+            defs["LoginRequestDTO"] = {
+  "required" : [ "email", "password" ],
+  "type" : "object",
+  "properties" : {
+    "email" : {
+      "type" : "string"
+    },
+    "password" : {
+      "type" : "string"
+    }
+  }
+};
+            defs["PaymentRequestDTO"] = {
+  "type" : "object",
+  "properties" : {
+    "price" : {
+      "type" : "number"
+    },
+    "paymentType" : {
+      "type" : "string",
+      "enum" : [ "BILLET", "PIX", "CASH" ]
+    },
+    "paymentStatus" : {
+      "type" : "string",
+      "enum" : [ "PAID", "PAYABLE" ]
+    },
+    "paymentDate" : {
+      "type" : "string",
+      "format" : "date"
+    },
+    "tenantId" : {
+      "type" : "integer",
+      "format" : "int64"
+    }
+  }
+};
+            defs["RegisterRequestDTO"] = {
+  "required" : [ "email", "name", "password" ],
+  "type" : "object",
+  "properties" : {
+    "email" : {
+      "type" : "string"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "password" : {
+      "maxLength" : 2147483647,
+      "minLength" : 8,
+      "type" : "string"
+    }
+  }
+};
             defs["Tenant"] = {
   "type" : "object",
   "properties" : {
@@ -820,11 +886,14 @@
       "type" : "string",
       "format" : "date"
     },
-    "birthState" : {
+    "birthLocal" : {
       "type" : "string"
     },
-    "apartment" : {
-      "$ref" : "#/components/schemas/Apartment"
+    "isActive" : {
+      "type" : "boolean"
+    },
+    "contract" : {
+      "$ref" : "#/components/schemas/Contract"
     }
   }
 };
@@ -849,6 +918,31 @@
       "format" : "date"
     },
     "birthState" : {
+      "type" : "string"
+    }
+  }
+};
+            defs["TokenDTO"] = {
+  "type" : "object",
+  "properties" : {
+    "email" : {
+      "type" : "string"
+    },
+    "authenticated" : {
+      "type" : "boolean"
+    },
+    "createAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    },
+    "expiresAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    },
+    "accessToken" : {
+      "type" : "string"
+    },
+    "refreshToken" : {
       "type" : "string"
     }
   }
@@ -882,6 +976,13 @@
                     <li data-group="Apartment" data-name="updateStatus" class="">
                       <a href="#api-Apartment-updateStatus">updateStatus</a>
                     </li>
+                  <li class="nav-header" data-group="Authentication"><a href="#api-Authentication">API Methods - Authentication</a></li>
+                    <li data-group="Authentication" data-name="login" class="">
+                      <a href="#api-Authentication-login">login</a>
+                    </li>
+                    <li data-group="Authentication" data-name="register" class="">
+                      <a href="#api-Authentication-register">register</a>
+                    </li>
                   <li class="nav-header" data-group="Contract"><a href="#api-Contract">API Methods - Contract</a></li>
                     <li data-group="Contract" data-name="findAll" class="">
                       <a href="#api-Contract-findAll">findAll</a>
@@ -894,6 +995,16 @@
                     </li>
                     <li data-group="Contract" data-name="update" class="">
                       <a href="#api-Contract-update">update</a>
+                    </li>
+                  <li class="nav-header" data-group="Payment"><a href="#api-Payment">API Methods - Payment</a></li>
+                    <li data-group="Payment" data-name="findAll" class="">
+                      <a href="#api-Payment-findAll">findAll</a>
+                    </li>
+                    <li data-group="Payment" data-name="findByPaymentDate" class="">
+                      <a href="#api-Payment-findByPaymentDate">findByPaymentDate</a>
+                    </li>
+                    <li data-group="Payment" data-name="save" class="">
+                      <a href="#api-Payment-save">save</a>
                     </li>
                   <li class="nav-header" data-group="Tenant"><a href="#api-Tenant">API Methods - Tenant</a></li>
                     <li data-group="Tenant" data-name="delete" class="">
@@ -1161,7 +1272,7 @@ apStatus = apStatus_example # String |  (optional)
 
 try: 
     # Finds all Apartment
-    api_response = api_instance.find_all2(page=page, size=size, direction=direction, apStatus=apStatus)
+    api_response = api_instance.find_all3(page=page, size=size, direction=direction, apStatus=apStatus)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ApartmentApi->findAll: %s\n" % e)</code></pre>
@@ -2163,6 +2274,617 @@ except ApiException as e:
                       </div>
                       <hr>
                   </section>
+                <section id="api-Authentication">
+                  <h1>Authentication</h1>
+                    <div id="api-Authentication-login">
+                      <article id="api-Authentication-login-0" data-group="User" data-name="login" data-version="0">
+                        <div class="pull-left">
+                          <h1>login</h1>
+                          <p>Login a User</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Login a User and returns a JWT Token</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/auth/login</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Authentication-login-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Authentication-login-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Authentication-login-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Authentication-login-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Authentication-login-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Authentication-login-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Authentication-login-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"http://localhost:8080/api/v1/auth/login"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Authentication-login-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AuthenticationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AuthenticationApiExample {
+
+    public static void main(String[] args) {
+        
+        AuthenticationApi apiInstance = new AuthenticationApi();
+        LoginRequestDTO body = ; // LoginRequestDTO | 
+        try {
+            array[TokenDTO] result = apiInstance.login(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthenticationApi#login");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authentication-login-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AuthenticationApi;
+
+public class AuthenticationApiExample {
+
+    public static void main(String[] args) {
+        AuthenticationApi apiInstance = new AuthenticationApi();
+        LoginRequestDTO body = ; // LoginRequestDTO | 
+        try {
+            array[TokenDTO] result = apiInstance.login(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthenticationApi#login");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Authentication-login-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Authentication-login-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">LoginRequestDTO *body = ; // 
+
+AuthenticationApi *apiInstance = [[AuthenticationApi alloc] init];
+
+// Login a User
+[apiInstance loginWith:body
+              completionHandler: ^(array[TokenDTO] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-login-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.AuthenticationApi()
+var body = ; // {{LoginRequestDTO}} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.login(body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Authentication-login-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Authentication-login-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class loginExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new AuthenticationApi();
+            var body = new LoginRequestDTO(); // LoginRequestDTO | 
+
+            try
+            {
+                // Login a User
+                array[TokenDTO] result = apiInstance.login(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AuthenticationApi.login: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-login-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiAuthenticationApi();
+$body = ; // LoginRequestDTO | 
+
+try {
+    $result = $api_instance->login($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AuthenticationApi->login: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-login-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AuthenticationApi;
+
+my $api_instance = WWW::SwaggerClient::AuthenticationApi->new();
+my $body = WWW::SwaggerClient::Object::LoginRequestDTO->new(); # LoginRequestDTO | 
+
+eval { 
+    my $result = $api_instance->login(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AuthenticationApi->login: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-login-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.AuthenticationApi()
+body =  # LoginRequestDTO | 
+
+try: 
+    # Login a User
+    api_response = api_instance.login(body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AuthenticationApi->login: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/LoginRequestDTO"
+      }
+    }
+  },
+  "required" : true
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_login_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_login_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Success </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-login-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-login-200-schema">
+                                  <div id='responses-login-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Success",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/TokenDTO"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-login-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-login-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-login-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - Not Found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Authentication-register">
+                      <article id="api-Authentication-register-0" data-group="User" data-name="register" data-version="0">
+                        <div class="pull-left">
+                          <h1>register</h1>
+                          <p>Creates a new User</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Creates a new User with USER_ROLE enum</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/auth/register</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Authentication-register-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Authentication-register-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Authentication-register-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Authentication-register-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Authentication-register-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Authentication-register-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Authentication-register-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Content-Type: application/json"\
+"http://localhost:8080/api/v1/auth/register"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Authentication-register-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AuthenticationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AuthenticationApiExample {
+
+    public static void main(String[] args) {
+        
+        AuthenticationApi apiInstance = new AuthenticationApi();
+        RegisterRequestDTO body = ; // RegisterRequestDTO | 
+        try {
+            apiInstance.register(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthenticationApi#register");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Authentication-register-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AuthenticationApi;
+
+public class AuthenticationApiExample {
+
+    public static void main(String[] args) {
+        AuthenticationApi apiInstance = new AuthenticationApi();
+        RegisterRequestDTO body = ; // RegisterRequestDTO | 
+        try {
+            apiInstance.register(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AuthenticationApi#register");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Authentication-register-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Authentication-register-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">RegisterRequestDTO *body = ; // 
+
+AuthenticationApi *apiInstance = [[AuthenticationApi alloc] init];
+
+// Creates a new User
+[apiInstance registerWith:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-register-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.AuthenticationApi()
+var body = ; // {{RegisterRequestDTO}} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.register(body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Authentication-register-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Authentication-register-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class registerExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new AuthenticationApi();
+            var body = new RegisterRequestDTO(); // RegisterRequestDTO | 
+
+            try
+            {
+                // Creates a new User
+                apiInstance.register(body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AuthenticationApi.register: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-register-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiAuthenticationApi();
+$body = ; // RegisterRequestDTO | 
+
+try {
+    $api_instance->register($body);
+} catch (Exception $e) {
+    echo 'Exception when calling AuthenticationApi->register: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-register-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AuthenticationApi;
+
+my $api_instance = WWW::SwaggerClient::AuthenticationApi->new();
+my $body = WWW::SwaggerClient::Object::RegisterRequestDTO->new(); # RegisterRequestDTO | 
+
+eval { 
+    $api_instance->register(body => $body);
+};
+if ($@) {
+    warn "Exception when calling AuthenticationApi->register: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Authentication-register-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.AuthenticationApi()
+body =  # RegisterRequestDTO | 
+
+try: 
+    # Creates a new User
+    api_instance.register(body)
+except ApiException as e:
+    print("Exception when calling AuthenticationApi->register: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RegisterRequestDTO"
+      }
+    }
+  },
+  "required" : true
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_register_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_register_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 201 - Created </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Bad Request </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Contract">
                   <h1>Contract</h1>
                     <div id="api-Contract-findAll">
@@ -2382,7 +3104,7 @@ direction = direction_example # String |  (optional) (default to asc)
 
 try: 
     # Finds all Contract
-    api_response = api_instance.find_all1(page=page, size=size, direction=direction)
+    api_response = api_instance.find_all2(page=page, size=size, direction=direction)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ContractApi->findAll: %s\n" % e)</code></pre>
@@ -2525,10 +3247,13 @@ except ApiException as e:
                       <article id="api-Contract-findByUuid-0" data-group="User" data-name="findByUuid" data-version="0">
                         <div class="pull-left">
                           <h1>findByUuid</h1>
-                          <p>Finds a Contract by UUID</p>
+                          <p>Finds a Contract</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Finds a Contract by UUID</p>
+                        <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/contracts/{uuid}</span></code></pre>
                         <p>
@@ -2865,7 +3590,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Contract-save-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
 -H "Content-Type: application/json"\
-"http://localhost:8080/api/v1/contracts?ap_id="</code></pre>
+"http://localhost:8080/api/v1/contracts?num_ap="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Contract-save-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2882,9 +3607,9 @@ public class ContractApiExample {
         
         ContractApi apiInstance = new ContractApi();
         ContractRequestSaveDTO body = ; // ContractRequestSaveDTO | 
-        Long apId = 789; // Long | 
+        Long numAp = 789; // Long | 
         try {
-            apiInstance.save(body, apId);
+            apiInstance.save(body, numAp);
         } catch (ApiException e) {
             System.err.println("Exception when calling ContractApi#save");
             e.printStackTrace();
@@ -2901,9 +3626,9 @@ public class ContractApiExample {
     public static void main(String[] args) {
         ContractApi apiInstance = new ContractApi();
         ContractRequestSaveDTO body = ; // ContractRequestSaveDTO | 
-        Long apId = 789; // Long | 
+        Long numAp = 789; // Long | 
         try {
-            apiInstance.save(body, apId);
+            apiInstance.save(body, numAp);
         } catch (ApiException e) {
             System.err.println("Exception when calling ContractApi#save");
             e.printStackTrace();
@@ -2917,13 +3642,13 @@ public class ContractApiExample {
   </div> -->
                             <div class="tab-pane" id="examples-Contract-save-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">ContractRequestSaveDTO *body = ; // 
-Long *apId = 789; // 
+Long *numAp = 789; // 
 
 ContractApi *apiInstance = [[ContractApi alloc] init];
 
 // Adds a new Contract
 [apiInstance saveWith:body
-    apId:apId
+    numAp:numAp
               completionHandler: ^(NSError* error) {
                             if (error) {
                                 NSLog(@"Error: %@", error);
@@ -2937,7 +3662,7 @@ ContractApi *apiInstance = [[ContractApi alloc] init];
 
 var api = new ViverBemApiDocumentation.ContractApi()
 var body = ; // {{ContractRequestSaveDTO}} 
-var apId = 789; // {{Long}} 
+var numAp = 789; // {{Long}} 
 
 var callback = function(error, data, response) {
   if (error) {
@@ -2946,7 +3671,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully.');
   }
 };
-api.save(bodyapId, callback);
+api.save(bodynumAp, callback);
 </code></pre>
                             </div>
 
@@ -2969,12 +3694,12 @@ namespace Example
 
             var apiInstance = new ContractApi();
             var body = new ContractRequestSaveDTO(); // ContractRequestSaveDTO | 
-            var apId = 789;  // Long | 
+            var numAp = 789;  // Long | 
 
             try
             {
                 // Adds a new Contract
-                apiInstance.save(body, apId);
+                apiInstance.save(body, numAp);
             }
             catch (Exception e)
             {
@@ -2992,10 +3717,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiContractApi();
 $body = ; // ContractRequestSaveDTO | 
-$apId = 789; // Long | 
+$numAp = 789; // Long | 
 
 try {
-    $api_instance->save($body, $apId);
+    $api_instance->save($body, $numAp);
 } catch (Exception $e) {
     echo 'Exception when calling ContractApi->save: ', $e->getMessage(), PHP_EOL;
 }
@@ -3009,10 +3734,10 @@ use WWW::SwaggerClient::ContractApi;
 
 my $api_instance = WWW::SwaggerClient::ContractApi->new();
 my $body = WWW::SwaggerClient::Object::ContractRequestSaveDTO->new(); # ContractRequestSaveDTO | 
-my $apId = 789; # Long | 
+my $numAp = 789; # Long | 
 
 eval { 
-    $api_instance->save(body => $body, apId => $apId);
+    $api_instance->save(body => $body, numAp => $numAp);
 };
 if ($@) {
     warn "Exception when calling ContractApi->save: $@\n";
@@ -3029,11 +3754,11 @@ from pprint import pprint
 # create an instance of the API class
 api_instance = swagger_client.ContractApi()
 body =  # ContractRequestSaveDTO | 
-apId = 789 # Long | 
+numAp = 789 # Long | 
 
 try: 
     # Adds a new Contract
-    api_instance.save(body, apId)
+    api_instance.save(body, numAp)
 except ApiException as e:
     print("Exception when calling ContractApi->save: %s\n" % e)</code></pre>
                             </div>
@@ -3094,11 +3819,11 @@ except ApiException as e:
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">ap_id*</td>
+                                <tr><td style="width:150px;">num_ap*</td>
                                 <td>
                                 
                                 
-                                    <div id="d2e199_save_apId">
+                                    <div id="d2e199_save_numAp">
                                         <div class="json-schema-view">
                                             <div class="primitive">
                                                 <span class="type">
@@ -3429,6 +4154,949 @@ except ApiException as e:
                       </div>
                       <hr>
                   </section>
+                <section id="api-Payment">
+                  <h1>Payment</h1>
+                    <div id="api-Payment-findAll">
+                      <article id="api-Payment-findAll-0" data-group="User" data-name="findAll" data-version="0">
+                        <div class="pull-left">
+                          <h1>findAll</h1>
+                          <p>Finds all Payments</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/payments</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Payment-findAll-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Payment-findAll-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Payment-findAll-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Payment-findAll-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Payment-findAll-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Payment-findAll-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Payment-findAll-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"http://localhost:8080/api/v1/payments?page=&size=&direction="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Payment-findAll-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.PaymentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        
+        PaymentApi apiInstance = new PaymentApi();
+        Integer page = 56; // Integer | 
+        Integer size = 56; // Integer | 
+        String direction = direction_example; // String | 
+        try {
+            array[Contract] result = apiInstance.findAll(page, size, direction);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#findAll");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Payment-findAll-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.PaymentApi;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        PaymentApi apiInstance = new PaymentApi();
+        Integer page = 56; // Integer | 
+        Integer size = 56; // Integer | 
+        String direction = direction_example; // String | 
+        try {
+            array[Contract] result = apiInstance.findAll(page, size, direction);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#findAll");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Payment-findAll-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Payment-findAll-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *page = 56; //  (optional) (default to 0)
+Integer *size = 56; //  (optional) (default to 12)
+String *direction = direction_example; //  (optional) (default to desc)
+
+PaymentApi *apiInstance = [[PaymentApi alloc] init];
+
+// Finds all Payments
+[apiInstance findAllWith:page
+    size:size
+    direction:direction
+              completionHandler: ^(array[Contract] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findAll-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.PaymentApi()
+var opts = { 
+  'page': 56, // {{Integer}} 
+  'size': 56, // {{Integer}} 
+  'direction': direction_example // {{String}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.findAll(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Payment-findAll-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Payment-findAll-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class findAllExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new PaymentApi();
+            var page = 56;  // Integer |  (optional)  (default to 0)
+            var size = 56;  // Integer |  (optional)  (default to 12)
+            var direction = direction_example;  // String |  (optional)  (default to desc)
+
+            try
+            {
+                // Finds all Payments
+                array[Contract] result = apiInstance.findAll(page, size, direction);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling PaymentApi.findAll: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findAll-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiPaymentApi();
+$page = 56; // Integer | 
+$size = 56; // Integer | 
+$direction = direction_example; // String | 
+
+try {
+    $result = $api_instance->findAll($page, $size, $direction);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentApi->findAll: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findAll-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::PaymentApi;
+
+my $api_instance = WWW::SwaggerClient::PaymentApi->new();
+my $page = 56; # Integer | 
+my $size = 56; # Integer | 
+my $direction = direction_example; # String | 
+
+eval { 
+    my $result = $api_instance->findAll(page => $page, size => $size, direction => $direction);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling PaymentApi->findAll: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findAll-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.PaymentApi()
+page = 56 # Integer |  (optional) (default to 0)
+size = 56 # Integer |  (optional) (default to 12)
+direction = direction_example # String |  (optional) (default to desc)
+
+try: 
+    # Finds all Payments
+    api_response = api_instance.find_all1(page=page, size=size, direction=direction)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling PaymentApi->findAll: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">page</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_page">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    Integer
+                                                </span>
+                                                    <span class="format">
+                                                        (int32)
+                                                    </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">size</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_size">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    Integer
+                                                </span>
+                                                    <span class="format">
+                                                        (int32)
+                                                    </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">direction</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_direction">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Success </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-findAll-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-findAll-200-schema">
+                                  <div id='responses-findAll-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Success",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/Contract"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-findAll-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-findAll-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-findAll-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Payment-findByPaymentDate">
+                      <article id="api-Payment-findByPaymentDate-0" data-group="User" data-name="findByPaymentDate" data-version="0">
+                        <div class="pull-left">
+                          <h1>findByPaymentDate</h1>
+                          <p>Finds all Payments by date</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/payments/{date}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Payment-findByPaymentDate-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Payment-findByPaymentDate-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Payment-findByPaymentDate-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Payment-findByPaymentDate-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Payment-findByPaymentDate-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"http://localhost:8080/api/v1/payments/{date}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.PaymentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        
+        PaymentApi apiInstance = new PaymentApi();
+        String date = date_example; // String | 
+        try {
+            array[Contract] result = apiInstance.findByPaymentDate(date);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#findByPaymentDate");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.PaymentApi;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        PaymentApi apiInstance = new PaymentApi();
+        String date = date_example; // String | 
+        try {
+            array[Contract] result = apiInstance.findByPaymentDate(date);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#findByPaymentDate");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *date = date_example; // 
+
+PaymentApi *apiInstance = [[PaymentApi alloc] init];
+
+// Finds all Payments by date
+[apiInstance findByPaymentDateWith:date
+              completionHandler: ^(array[Contract] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.PaymentApi()
+var date = date_example; // {{String}} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.findByPaymentDate(date, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Payment-findByPaymentDate-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class findByPaymentDateExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new PaymentApi();
+            var date = date_example;  // String | 
+
+            try
+            {
+                // Finds all Payments by date
+                array[Contract] result = apiInstance.findByPaymentDate(date);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling PaymentApi.findByPaymentDate: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiPaymentApi();
+$date = date_example; // String | 
+
+try {
+    $result = $api_instance->findByPaymentDate($date);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentApi->findByPaymentDate: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::PaymentApi;
+
+my $api_instance = WWW::SwaggerClient::PaymentApi->new();
+my $date = date_example; # String | 
+
+eval { 
+    my $result = $api_instance->findByPaymentDate(date => $date);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling PaymentApi->findByPaymentDate: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-findByPaymentDate-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.PaymentApi()
+date = date_example # String | 
+
+try: 
+    # Finds all Payments by date
+    api_response = api_instance.find_by_payment_date(date)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling PaymentApi->findByPaymentDate: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">date*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_findByPaymentDate_date">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Success </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-findByPaymentDate-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-findByPaymentDate-200-schema">
+                                  <div id='responses-findByPaymentDate-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Success",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/Contract"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-findByPaymentDate-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-findByPaymentDate-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-findByPaymentDate-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Payment-save">
+                      <article id="api-Payment-save-0" data-group="User" data-name="save" data-version="0">
+                        <div class="pull-left">
+                          <h1>save</h1>
+                          <p>Adds a new Payment</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/payments</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Payment-save-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Payment-save-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Payment-save-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Payment-save-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Payment-save-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Payment-save-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Payment-save-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Content-Type: application/json"\
+"http://localhost:8080/api/v1/payments"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Payment-save-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.PaymentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        
+        PaymentApi apiInstance = new PaymentApi();
+        PaymentRequestDTO body = ; // PaymentRequestDTO | 
+        try {
+            apiInstance.save(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#save");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Payment-save-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.PaymentApi;
+
+public class PaymentApiExample {
+
+    public static void main(String[] args) {
+        PaymentApi apiInstance = new PaymentApi();
+        PaymentRequestDTO body = ; // PaymentRequestDTO | 
+        try {
+            apiInstance.save(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentApi#save");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Payment-save-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Payment-save-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">PaymentRequestDTO *body = ; // 
+
+PaymentApi *apiInstance = [[PaymentApi alloc] init];
+
+// Adds a new Payment
+[apiInstance saveWith:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-save-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ViverBemApiDocumentation = require('viver_bem_api_documentation');
+
+var api = new ViverBemApiDocumentation.PaymentApi()
+var body = ; // {{PaymentRequestDTO}} 
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.save(body, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Payment-save-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Payment-save-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class saveExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new PaymentApi();
+            var body = new PaymentRequestDTO(); // PaymentRequestDTO | 
+
+            try
+            {
+                // Adds a new Payment
+                apiInstance.save(body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling PaymentApi.save: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-save-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiPaymentApi();
+$body = ; // PaymentRequestDTO | 
+
+try {
+    $api_instance->save($body);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentApi->save: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-save-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::PaymentApi;
+
+my $api_instance = WWW::SwaggerClient::PaymentApi->new();
+my $body = WWW::SwaggerClient::Object::PaymentRequestDTO->new(); # PaymentRequestDTO | 
+
+eval { 
+    $api_instance->save(body => $body);
+};
+if ($@) {
+    warn "Exception when calling PaymentApi->save: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Payment-save-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.PaymentApi()
+body =  # PaymentRequestDTO | 
+
+try: 
+    # Adds a new Payment
+    api_instance.save(body)
+except ApiException as e:
+    print("Exception when calling PaymentApi->save: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body <span style="color:red;">*</span></td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/PaymentRequestDTO"
+      }
+    }
+  },
+  "required" : true
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_save_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_save_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 201 - Created </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Bad Request </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Not Found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Tenant">
                   <h1>Tenant</h1>
                     <div id="api-Tenant-delete">
@@ -3721,7 +5389,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Tenant-findAll-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"http://localhost:8080/api/v1/tenants?page=&size=&direction="</code></pre>
+"http://localhost:8080/api/v1/tenants?page=&size=&direction=&name=&date=&is_active="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Tenant-findAll-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3740,8 +5408,11 @@ public class TenantApiExample {
         Integer page = 56; // Integer | 
         Integer size = 56; // Integer | 
         String direction = direction_example; // String | 
+        String name = name_example; // String | 
+        String date = date_example; // String | 
+        Boolean isActive = true; // Boolean | 
         try {
-            array[Tenant] result = apiInstance.findAll(page, size, direction);
+            array[Tenant] result = apiInstance.findAll(page, size, direction, name, date, isActive);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TenantApi#findAll");
@@ -3761,8 +5432,11 @@ public class TenantApiExample {
         Integer page = 56; // Integer | 
         Integer size = 56; // Integer | 
         String direction = direction_example; // String | 
+        String name = name_example; // String | 
+        String date = date_example; // String | 
+        Boolean isActive = true; // Boolean | 
         try {
-            array[Tenant] result = apiInstance.findAll(page, size, direction);
+            array[Tenant] result = apiInstance.findAll(page, size, direction, name, date, isActive);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TenantApi#findAll");
@@ -3778,7 +5452,10 @@ public class TenantApiExample {
                             <div class="tab-pane" id="examples-Tenant-findAll-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Integer *page = 56; //  (optional) (default to 0)
 Integer *size = 56; //  (optional) (default to 12)
-String *direction = direction_example; //  (optional) (default to asc)
+String *direction = direction_example; //  (optional) (default to desc)
+String *name = name_example; //  (optional)
+String *date = date_example; //  (optional)
+Boolean *isActive = true; //  (optional) (default to true)
 
 TenantApi *apiInstance = [[TenantApi alloc] init];
 
@@ -3786,6 +5463,9 @@ TenantApi *apiInstance = [[TenantApi alloc] init];
 [apiInstance findAllWith:page
     size:size
     direction:direction
+    name:name
+    date:date
+    isActive:isActive
               completionHandler: ^(array[Tenant] output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -3804,7 +5484,10 @@ var api = new ViverBemApiDocumentation.TenantApi()
 var opts = { 
   'page': 56, // {{Integer}} 
   'size': 56, // {{Integer}} 
-  'direction': direction_example // {{String}} 
+  'direction': direction_example, // {{String}} 
+  'name': name_example, // {{String}} 
+  'date': date_example, // {{String}} 
+  'isActive': true // {{Boolean}} 
 };
 var callback = function(error, data, response) {
   if (error) {
@@ -3837,12 +5520,15 @@ namespace Example
             var apiInstance = new TenantApi();
             var page = 56;  // Integer |  (optional)  (default to 0)
             var size = 56;  // Integer |  (optional)  (default to 12)
-            var direction = direction_example;  // String |  (optional)  (default to asc)
+            var direction = direction_example;  // String |  (optional)  (default to desc)
+            var name = name_example;  // String |  (optional) 
+            var date = date_example;  // String |  (optional) 
+            var isActive = true;  // Boolean |  (optional)  (default to true)
 
             try
             {
                 // Finds all Tenant
-                array[Tenant] result = apiInstance.findAll(page, size, direction);
+                array[Tenant] result = apiInstance.findAll(page, size, direction, name, date, isActive);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -3863,9 +5549,12 @@ $api_instance = new Swagger\Client\ApiTenantApi();
 $page = 56; // Integer | 
 $size = 56; // Integer | 
 $direction = direction_example; // String | 
+$name = name_example; // String | 
+$date = date_example; // String | 
+$isActive = true; // Boolean | 
 
 try {
-    $result = $api_instance->findAll($page, $size, $direction);
+    $result = $api_instance->findAll($page, $size, $direction, $name, $date, $isActive);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TenantApi->findAll: ', $e->getMessage(), PHP_EOL;
@@ -3882,9 +5571,12 @@ my $api_instance = WWW::SwaggerClient::TenantApi->new();
 my $page = 56; # Integer | 
 my $size = 56; # Integer | 
 my $direction = direction_example; # String | 
+my $name = name_example; # String | 
+my $date = date_example; # String | 
+my $isActive = true; # Boolean | 
 
 eval { 
-    my $result = $api_instance->findAll(page => $page, size => $size, direction => $direction);
+    my $result = $api_instance->findAll(page => $page, size => $size, direction => $direction, name => $name, date => $date, isActive => $isActive);
     print Dumper($result);
 };
 if ($@) {
@@ -3903,11 +5595,14 @@ from pprint import pprint
 api_instance = swagger_client.TenantApi()
 page = 56 # Integer |  (optional) (default to 0)
 size = 56 # Integer |  (optional) (default to 12)
-direction = direction_example # String |  (optional) (default to asc)
+direction = direction_example # String |  (optional) (default to desc)
+name = name_example # String |  (optional)
+date = date_example # String |  (optional)
+isActive = true # Boolean |  (optional) (default to true)
 
 try: 
     # Finds all Tenant
-    api_response = api_instance.find_all(page=page, size=size, direction=direction)
+    api_response = api_instance.find_all(page=page, size=size, direction=direction, name=name, date=date, isActive=isActive)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling TenantApi->findAll: %s\n" % e)</code></pre>
@@ -3973,6 +5668,54 @@ except ApiException as e:
                                             <div class="primitive">
                                                 <span class="type">
                                                     String
+                                                </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">name</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_name">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">date</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_date">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">is_active</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_findAll_isActive">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    Boolean
                                                 </span>
                                 
                                             </div>
@@ -4050,10 +5793,13 @@ except ApiException as e:
                       <article id="api-Tenant-findByCPF-0" data-group="User" data-name="findByCPF" data-version="0">
                         <div class="pull-left">
                           <h1>findByCPF</h1>
-                          <p>Finds a Tenant by CPF</p>
+                          <p>Finds a Tenant</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Finds a Tenant by CPF</p>
+                        <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/tenants/by-cpf</span></code></pre>
                         <p>
@@ -4368,10 +6114,13 @@ except ApiException as e:
                       <article id="api-Tenant-findById-0" data-group="User" data-name="findById" data-version="0">
                         <div class="pull-left">
                           <h1>findById</h1>
-                          <p>Finds a Tenant by ID</p>
+                          <p>Finds a Tenant</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Finds a Tenant by ID</p>
+                        <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/tenants/{id}</span></code></pre>
                         <p>
