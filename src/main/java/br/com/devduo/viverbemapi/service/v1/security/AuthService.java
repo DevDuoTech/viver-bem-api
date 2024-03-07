@@ -4,6 +4,7 @@ import br.com.devduo.viverbemapi.dtos.LoginRequestDTO;
 import br.com.devduo.viverbemapi.dtos.RegisterRequestDTO;
 import br.com.devduo.viverbemapi.dtos.TokenDTO;
 import br.com.devduo.viverbemapi.enums.RoleEnum;
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Role;
 import br.com.devduo.viverbemapi.models.User;
@@ -31,7 +32,7 @@ public class AuthService {
     public String register(RegisterRequestDTO dto) {
         User existentUser = userRepository.findByEmail(dto.getEmail());
         if (existentUser != null)
-            return "This email is already taken";
+            throw new BadRequestException("This email is already taken");
 
         Role role = roleRepository.findByDescription(RoleEnum.USER);
 
