@@ -1,0 +1,26 @@
+cors:
+  originPatterns: http://localhost:3000
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://db-viver-bem.a.aivencloud.com:11061/defaultdb?sslmode=require&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+
+security:
+  jwt:
+    token:
+      secret: ${SECRET_KEY}
+      time: 3600000
+
+springdoc:
+  pathsToMatch: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
