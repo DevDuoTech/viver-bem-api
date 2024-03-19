@@ -81,6 +81,7 @@ public class ContractService {
         Contract contract = Contract.builder()
                 .startDate(contractRequestDTO.getStartDate())
                 .endDate(contractRequestDTO.getEndDate())
+                .dueDate(contractRequestDTO.getDueDate())
                 .price(contractRequestDTO.getPrice())
                 .description(contractRequestDTO.getDescription())
                 .hasGuarantee(contractRequestDTO.getHasGuarantee())

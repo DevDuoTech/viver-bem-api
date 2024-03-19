@@ -3,6 +3,7 @@ package br.com.devduo.viverbemapi.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,9 +31,8 @@ public class Contract {
     private LocalDate endDate;
     private BigDecimal price;
     private String description;
-    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "due_date")
-    private LocalDate dueDate;
+    private Integer dueDate;
     @Column(name = "has_guarantee")
     private Boolean hasGuarantee;
 
