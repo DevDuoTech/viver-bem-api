@@ -2,6 +2,7 @@ package br.com.devduo.viverbemapi.handler;
 
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ExceptionResponse;
+import br.com.devduo.viverbemapi.exceptions.ForbiddenException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,14 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
                         .message(ex.getMessage())
                         .details(request.getDescription(false))
                         .build(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ForbiddenException.class)
+    public final ResponseEntity<ExceptionResponse> handleForbiddenException(Exception ex, WebRequest request){
+        return new ResponseEntity<>(
+                ExceptionResponse.builder()
+                        .timestamp(new Date())
+                        .message(ex.getMessage())
+                        .details(request.getDescription(false))
+                        .build(),HttpStatus.FORBIDDEN);
     }
 }

@@ -23,9 +23,15 @@ public class User implements UserDetails {
     private Long id;
     private String email;
     private String password;
+    @Column(name = "profile_picture")
+    private byte[] profilePicture;
+    @Column(name = "is_account_non_expired")
     private Boolean isAccountNonExpired;
+    @Column(name = "is_account_non_locked")
     private Boolean isAccountNonLocked;
+    @Column(name = "is_credentials_non_expired")
     private Boolean isCredentialsNonExpired;
+    @Column(name = "is_enabled")
     private Boolean isEnabled;
 
     @ManyToMany(fetch = FetchType.EAGER)

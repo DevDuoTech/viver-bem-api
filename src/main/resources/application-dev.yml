@@ -20,6 +20,12 @@ security:
       secret: ${SECRET_KEY}
       time: 3600000
 
+servlet:
+  multipart:
+    enabled: true
+    file-size-threshold: 2KB
+    max-file-size: 10MB
+
 springdoc:
   pathsToMatch: /api/**/v1/**
   swagger-ui:

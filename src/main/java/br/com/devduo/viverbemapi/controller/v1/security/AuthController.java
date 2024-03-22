@@ -3,7 +3,6 @@ package br.com.devduo.viverbemapi.controller.v1.security;
 import br.com.devduo.viverbemapi.dtos.LoginRequestDTO;
 import br.com.devduo.viverbemapi.dtos.RegisterRequestDTO;
 import br.com.devduo.viverbemapi.dtos.TokenDTO;
-import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.service.v1.security.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

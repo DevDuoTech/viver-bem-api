@@ -7,11 +7,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,9 +20,6 @@ public class JwtTokenService {
     private String SECRET_KEY;
     @Value("${security.jwt.token.time}")
     private Long VALIDITY_TIME;
-
-    @Autowired
-    private UserService userService;
 
     public TokenDTO createAccessToken(String email, Set<Role> roles) {
         Date now = new Date();
@@ -89,11 +82,5 @@ public class JwtTokenService {
         } catch (JWTVerificationException exception) {
             return false;
         }
-    }
-
-    public Authentication getAuthentication(String token) {
-        DecodedJWT decodedJWT = decodedJWT(token);
-        UserDetails user = userService.loadUserByUsername(decodedJWT.getSubject());
-        return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
     }
 }
