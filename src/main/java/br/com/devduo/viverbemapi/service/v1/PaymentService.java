@@ -47,6 +47,7 @@ public class PaymentService {
         return assembler.toModel(paymentPage, link);
     }
 
+//    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
     public Payment save(PaymentRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("PaymentRequestDTO cannot be null");
@@ -55,7 +56,7 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
 
         Payment payment = Payment.builder()
-                .price(dto.getPrice())
+                .price(dto.getPaymentValue())
                 .paymentDate(dto.getPaymentDate())
                 .paymentType(dto.getPaymentType())
                 .paymentStatus(dto.getPaymentStatus())

@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequestDTO {
-    private BigDecimal price;
+    private BigDecimal paymentValue;
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
     @Enumerated(EnumType.STRING)

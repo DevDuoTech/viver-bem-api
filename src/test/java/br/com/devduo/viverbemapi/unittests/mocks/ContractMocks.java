@@ -11,20 +11,25 @@ public class ContractMocks {
 
     public static Contract mockContract() {
         return Contract.builder()
-                .uuid(UUID.fromString("45b5e2d4-fa97-4eaf-afb9-3f8378ed8cb8"))
-                .startDate(LocalDate.of(2024, 1, 05))
-                .endDate(LocalDate.of(2024, 6, 05))
+                .uuid(UUID.randomUUID())
+                .startDate(LocalDate.of(2024, 1, 5))
+                .endDate(LocalDate.of(2024, 6, 5))
                 .price(BigDecimal.valueOf(550))
+                .dueDate(5)
                 .description("A simple contract")
+                .hasGuarantee(true)
                 .apartment(ApartmentMocks.mockAvailableApartment())
+                .tenant(TenantMocks.mockTenant())
                 .build();
     }
 
     public static ContractRequestDTO mockContractDTO() {
         return ContractRequestDTO.builder()
-                .startDate(LocalDate.of(2024, 1, 05))
-                .endDate(LocalDate.of(2024, 6, 05))
+                .startDate(LocalDate.of(2024, 1, 5))
+                .endDate(LocalDate.of(2024, 6, 5))
                 .price(BigDecimal.valueOf(550))
+                .dueDate(5)
+                .hasGuarantee(true)
                 .description("A simple contract")
                 .build();
     }
