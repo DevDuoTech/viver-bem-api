@@ -19,7 +19,7 @@ public class ContractMocks {
                 .description("A simple contract")
                 .hasGuarantee(true)
                 .apartment(ApartmentMocks.mockAvailableApartment())
-                .tenant(TenantMocks.mockTenant())
+                .tenant(TenantMocks.mockActiveTenant())
                 .build();
     }
 

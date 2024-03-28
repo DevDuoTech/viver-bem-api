@@ -55,8 +55,8 @@ public class TenantServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindAllSuccessfully() {
         Pageable pageable = Mockito.mock(Pageable.class);
-        Tenant mockedTenant = TenantMocks.mockTenant();
-        Tenant mockedTenant2 = TenantMocks.mockTenant();
+        Tenant mockedTenant = TenantMocks.mockActiveTenant();
+        Tenant mockedTenant2 = TenantMocks.mockActiveTenant();
 
         List<Tenant> tenantList = List.of(mockedTenant, mockedTenant2);
 
@@ -93,7 +93,7 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Finds a Tenant by ID and returns a Tenant successfully")
     public void testFindByIdSuccessfully() {
-        Tenant existingTenant = TenantMocks.mockTenant();
+        Tenant existingTenant = TenantMocks.mockActiveTenant();
 
         when(repository.findById(1L)).thenReturn(Optional.of(existingTenant));
 
@@ -137,7 +137,7 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Tries to find a Tenant with CPF and retuns a Tenant successfully")
     public void testFindByCPFSuccessfully() {
-        Tenant existentTenant = TenantMocks.mockTenant();
+        Tenant existentTenant = TenantMocks.mockActiveTenant();
 
         when(repository.findByCPF("foo")).thenReturn(Optional.of(existentTenant));
 
@@ -179,7 +179,7 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Persist a new Tenant and returns a Tenant successfully")
     public void testSaveSuccessfully() {
-        Tenant persistedTenant = TenantMocks.mockTenant();
+        Tenant persistedTenant = TenantMocks.mockActiveTenant();
 
         when(repository.save(persistedTenant)).thenReturn(persistedTenant);
 
@@ -211,8 +211,8 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Update a Tenant successfully")
     public void testUpdateSuccessfully() {
-        TenantsRequestDTO updatedTenant = TenantMocks.mockTenantDTO();
-        Tenant existentTenant = TenantMocks.mockTenant();
+        TenantsRequestDTO updatedTenant = TenantMocks.mockActiveTenantDTO();
+        Tenant existentTenant = TenantMocks.mockActiveTenant();
 
         when(repository.findByCPF(updatedTenant.getCpf())).thenReturn(Optional.of(existentTenant));
 
@@ -242,7 +242,7 @@ public class TenantServiceTest {
     @DisplayName("Update a non-existent Tenant and throws an ResourceNotFoundException")
     public void testUpdateNonExistent() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            service.update(TenantMocks.mockTenantDTO());
+            service.update(TenantMocks.mockActiveTenantDTO());
         });
 
         String expectedMessage = "No records found for this CPF";
@@ -254,7 +254,7 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Delete a Tenant successfully")
     public void testDeleteSuccessfully() {
-        Tenant existentTenant = TenantMocks.mockTenant();
+        Tenant existentTenant = TenantMocks.mockActiveTenant();
         when(repository.findById(existentTenant.getId())).thenReturn(Optional.of(existentTenant));
 
         service.delete(existentTenant.getId());
