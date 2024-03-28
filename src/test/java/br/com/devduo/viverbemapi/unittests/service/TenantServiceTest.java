@@ -88,6 +88,46 @@ public class TenantServiceTest {
         assertEquals(expectedTenant.getId(), resultTenant.getId());
         assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
         assertEquals(expectedTenant.getRg(), resultTenant.getRg());
+        assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
+    }
+
+    @Test
+    @DisplayName("Finds all disable Tenants without args and return a PagedModel of Tenants successfully")
+    @SuppressWarnings("unchecked")
+    public void testFindAllDisableSuccessfully() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+        Tenant mockedTenant = TenantMocks.mockDisableTenant();
+
+        List<Tenant> tenantList = List.of(mockedTenant);
+
+        Page<Tenant> tenantPage = new PageImpl<>(tenantList);
+
+        when(repository.findAll(pageable)).thenReturn(tenantPage);
+
+        EntityModel<Tenant> entityModel = EntityModel.of(mockedTenant);
+        List<EntityModel<Tenant>> entityModels = Arrays.asList(entityModel);
+        PagedModel<EntityModel<Tenant>> expectedPagedModel = PagedModel.of(entityModels,
+                new PagedModel.PageMetadata(entityModels.size(), 0, 1));
+
+        Mockito.when(assembler.toModel(any(Page.class), any(Link.class))).thenReturn(expectedPagedModel);
+
+        PagedModel<EntityModel<Tenant>> result = service.findAll(pageable, null, null, false);
+
+        Mockito.verify(repository).findAll(pageable);
+
+        assertEquals(expectedPagedModel, result);
+
+        List<EntityModel<Tenant>> expectedList = expectedPagedModel.getContent().stream().toList();
+        Tenant expectedTenant = expectedList.get(0).getContent();
+
+        List<EntityModel<Tenant>> resultList = result.getContent().stream().toList();
+        Tenant resultTenant = resultList.get(0).getContent();
+
+        assertEquals(expectedList.size(), resultList.size());
+        assertEquals(expectedTenant.getId(), resultTenant.getId());
+        assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
+        assertEquals(expectedTenant.getRg(), resultTenant.getRg());
+        assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
     }
 
     @Test
