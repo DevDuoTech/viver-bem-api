@@ -50,7 +50,7 @@ jobs:
           echo "spring.jpa.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect" >> .env
           echo "security.jwt.token.secret" >> .env
 
-          mvn clean package -Pprod
+          mvn clean package
 
       - name: Docker Compose
         run: docker compose build
