@@ -131,6 +131,48 @@ public class TenantServiceTest {
     }
 
     @Test
+    @DisplayName("Finds all Tenants with name and return a PagedModel of Tenants successfully")
+    @SuppressWarnings("unchecked")
+    public void testFindAllWithNameSuccessfully() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+        Tenant mockedTenant = TenantMocks.mockActiveTenant();
+        Tenant mockedTenant2 = TenantMocks.mockActiveTenant();
+
+        List<Tenant> tenantList = List.of(mockedTenant, mockedTenant2);
+
+        Page<Tenant> tenantPage = new PageImpl<>(tenantList);
+
+        when(repository.findAll(pageable)).thenReturn(tenantPage);
+
+        EntityModel<Tenant> entityModel = EntityModel.of(mockedTenant);
+        EntityModel<Tenant> entityModel2 = EntityModel.of(mockedTenant2);
+        List<EntityModel<Tenant>> entityModels = Arrays.asList(entityModel, entityModel2);
+        PagedModel<EntityModel<Tenant>> expectedPagedModel = PagedModel.of(entityModels,
+                new PagedModel.PageMetadata(entityModels.size(), 0, 2));
+
+        Mockito.when(assembler.toModel(any(Page.class), any(Link.class))).thenReturn(expectedPagedModel);
+
+        PagedModel<EntityModel<Tenant>> result = service.findAll(pageable, "Tenant name", null, false);
+
+        Mockito.verify(repository).findAll(pageable);
+
+        assertEquals(expectedPagedModel, result);
+
+        List<EntityModel<Tenant>> expectedList = expectedPagedModel.getContent().stream().toList();
+        Tenant expectedTenant = expectedList.get(0).getContent();
+
+        List<EntityModel<Tenant>> resultList = result.getContent().stream().toList();
+        Tenant resultTenant = resultList.get(0).getContent();
+
+        assertEquals(expectedList.size(), resultList.size());
+        assertEquals(expectedTenant.getName(), resultTenant.getName());
+        assertEquals(expectedTenant.getId(), resultTenant.getId());
+        assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
+        assertEquals(expectedTenant.getRg(), resultTenant.getRg());
+        assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
+    }
+
+    @Test
     @DisplayName("Finds a Tenant by ID and returns a Tenant successfully")
     public void testFindByIdSuccessfully() {
         Tenant existingTenant = TenantMocks.mockActiveTenant();
