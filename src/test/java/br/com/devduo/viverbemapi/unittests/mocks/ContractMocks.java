@@ -8,7 +8,6 @@ import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 
 public class ContractMocks {
-
     public static Contract mockContract() {
         return Contract.builder()
                 .uuid(UUID.randomUUID())

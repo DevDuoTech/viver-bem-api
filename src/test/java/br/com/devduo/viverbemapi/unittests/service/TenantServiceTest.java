@@ -1,16 +1,18 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.devduo.viverbemapi.models.Contract;
+import br.com.devduo.viverbemapi.service.v1.PaymentService;
+import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,8 @@ public class TenantServiceTest {
     private TenantRepository repository;
     @Mock
     private PagedResourcesAssembler<Tenant> assembler;
+    @Mock
+    private PaymentService paymentService;
 
     @BeforeEach
     public void setUp() {
@@ -128,6 +132,48 @@ public class TenantServiceTest {
         assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
         assertEquals(expectedTenant.getRg(), resultTenant.getRg());
         assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
+    }
+
+    @Test
+    @DisplayName("Finds all active Tenants with yearMonth and return a PagedModel of Tenants successfully")
+    @SuppressWarnings("unchecked")
+    public void testFindAllWithDateSuccessfully() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+        Tenant mockedTenant = TenantMocks.mockDisableTenant();
+        mockedTenant.setContract(ContractMocks.mockContract());
+
+        List<Tenant> tenantList = List.of(mockedTenant);
+
+        Page<Tenant> tenantPage = new PageImpl<>(tenantList);
+
+        when(repository.findAll(pageable)).thenReturn(tenantPage);
+        when(paymentService.findByYearMonth(YearMonth.of(2024, 4))).thenReturn(List.of());
+
+        EntityModel<Tenant> entityModel = EntityModel.of(mockedTenant);
+        List<EntityModel<Tenant>> entityModels = Arrays.asList(entityModel);
+        PagedModel<EntityModel<Tenant>> expectedPagedModel = PagedModel.of(entityModels,
+                new PagedModel.PageMetadata(entityModels.size(), 0, 1));
+
+        Mockito.when(assembler.toModel(any(Page.class), any(Link.class))).thenReturn(expectedPagedModel);
+
+        PagedModel<EntityModel<Tenant>> result = service.findAll(pageable, null, YearMonth.of(2024, 4), true);
+
+        Mockito.verify(repository).findAll(pageable);
+
+        assertEquals(expectedPagedModel, result);
+
+        List<EntityModel<Tenant>> expectedList = expectedPagedModel.getContent().stream().toList();
+        Tenant expectedTenant = expectedList.get(0).getContent();
+
+        List<EntityModel<Tenant>> resultList = result.getContent().stream().toList();
+        Tenant resultTenant = resultList.get(0).getContent();
+
+        assertEquals(expectedList.size(), resultList.size());
+        assertEquals(expectedTenant.getId(), resultTenant.getId());
+        assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
+        assertEquals(expectedTenant.getRg(), resultTenant.getRg());
+        assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
+        assertNull(resultTenant.getPayments());
     }
 
     @Test
