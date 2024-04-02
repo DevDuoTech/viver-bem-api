@@ -191,7 +191,6 @@ public class TenantServiceTest {
         assertEquals(existingTenant.getCpf(), result.getCpf());
         assertEquals(existingTenant.getId(), result.getId());
         assertEquals(existingTenant.getRg(), result.getRg());
-//        assertEquals(existingTenant.getApartment(), result.getApartment());
     }
 
     @Test
@@ -278,7 +277,6 @@ public class TenantServiceTest {
         assertEquals(persistedTenant.getId(), result.getId());
         assertEquals(persistedTenant.getCpf(), result.getCpf());
         assertEquals(persistedTenant.getRg(), result.getRg());
-//        assertEquals(persistedTenant.getApartment(), result.getApartment());
     }
 
     @Test
