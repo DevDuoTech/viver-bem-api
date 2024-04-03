@@ -1,11 +1,14 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,5 +73,24 @@ public class ContractServiceTest {
         assertEquals(expectedPagedModel, result);
         assertEquals(expectedPagedModel.getLinks(), result.getLinks());
         assertEquals(expectedPagedModel.getContent().size(), result.getContent().size());
+    }
+
+    @Test
+    @DisplayName("Finds a Contract by UUID and returns a Contract Successfully")
+    public void testFindContractByUUIDSuccessfully() {
+        Contract mockedContract = ContractMocks.mockContract();
+
+        when(repository.findById(any(UUID.class))).thenReturn(Optional.of(mockedContract));
+
+        var result = service.findByUuid(mockedContract.getUuid());
+
+        assertNotNull(result);
+        assertNotNull(result.getUuid());
+
+        assertEquals(mockedContract.getUuid(), result.getUuid());
+        assertEquals(mockedContract.getApartment(), result.getApartment());
+        assertEquals(mockedContract.getPrice(), result.getPrice());
+        assertEquals(mockedContract.getStartDate(), result.getStartDate());
+        assertEquals(mockedContract.getEndDate(), result.getEndDate());
     }
 }
