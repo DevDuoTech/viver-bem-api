@@ -49,6 +49,8 @@ public class ContractService {
     }
 
     public Contract findByUuid(UUID uuid) {
+        if (uuid == null)
+            throw new BadRequestException("Contract UUID cannot be null");
         return contractRepository.findById(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this UUID"));
     }

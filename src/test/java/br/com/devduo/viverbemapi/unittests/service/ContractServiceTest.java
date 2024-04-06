@@ -1,7 +1,6 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,5 +93,31 @@ public class ContractServiceTest {
         assertEquals(mockedContract.getPrice(), result.getPrice());
         assertEquals(mockedContract.getStartDate(), result.getStartDate());
         assertEquals(mockedContract.getEndDate(), result.getEndDate());
+    }
+
+    @Test
+    @DisplayName("Finds a Contract by UUID and throws a ResourceNotFoundException")
+    public void testFindContractByUUIDAndThrowsNotfound() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            service.findByUuid(UUID.randomUUID());
+        });
+
+        String expectedMessage = "Resource not found for this UUID";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to find a Contract by null UUID and throws a BadRequestException")
+    public void testFindContractByUUIDAndThrowsBadRequest() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.findByUuid(null);
+        });
+
+        String expectedMessage = "Contract UUID cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 }
