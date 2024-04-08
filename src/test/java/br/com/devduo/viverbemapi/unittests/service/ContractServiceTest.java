@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -119,5 +121,27 @@ public class ContractServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Updates a Contract Successfully")
+    public void testUpdateContractSuccessfully() {
+        ContractRequestUpdateDTO mockedContractUpdateDTO = ContractMocks.mockContractUpdateDTO();
+        Contract existingContract = ContractMocks.mockContract();
+        existingContract.setUuid(mockedContractUpdateDTO.getUuid());
+
+        when(repository.findById(mockedContractUpdateDTO.getUuid())).thenReturn(Optional.of(existingContract));
+        when(repository.save(existingContract)).thenReturn(existingContract);
+
+        service.update(mockedContractUpdateDTO);
+
+        Contract result = service.findByUuid(mockedContractUpdateDTO.getUuid());
+
+        assertNotNull(result);
+        assertNotNull(result.getUuid());
+
+        assertEquals(mockedContractUpdateDTO.getUuid(), result.getUuid());
+        assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getPrice(), result.getPrice());
+        assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getDueDate(), result.getDueDate());
     }
 }

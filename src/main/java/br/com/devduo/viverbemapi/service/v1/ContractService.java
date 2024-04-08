@@ -110,6 +110,7 @@ public class ContractService {
         contract.setEndDate(contractRequestDTO.getEndDate());
         contract.setPrice(contractRequestDTO.getPrice());
         contract.setDescription(contractRequestDTO.getDescription());
+        contract.setDueDate(contractRequestDTO.getDueDate());
 
         contractRepository.save(contract);
     }
