@@ -144,4 +144,17 @@ public class ContractServiceTest {
         assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getPrice(), result.getPrice());
         assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getDueDate(), result.getDueDate());
     }
+    
+    @Test
+    @DisplayName("Tries to update a Contract and throws a BadRequestException")
+    public void testUpdateAndThrowsBadRequestException() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.update(null);
+        });
+
+        String expectedMessage = "ContractRequestDTO cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
