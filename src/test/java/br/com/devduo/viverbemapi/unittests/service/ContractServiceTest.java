@@ -1,18 +1,20 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Apartment;
+import br.com.devduo.viverbemapi.models.Contract;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.ApartmentRepository;
+import br.com.devduo.viverbemapi.repository.ContractRepository;
+import br.com.devduo.viverbemapi.service.v1.ApartmentService;
+import br.com.devduo.viverbemapi.service.v1.ContractService;
+import br.com.devduo.viverbemapi.service.v1.TenantService;
+import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +33,17 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 
-import br.com.devduo.viverbemapi.models.Contract;
-import br.com.devduo.viverbemapi.repository.ContractRepository;
-import br.com.devduo.viverbemapi.service.v1.ContractService;
-import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ContractServiceTest {
     @InjectMocks
     private ContractService service;
@@ -42,6 +51,10 @@ public class ContractServiceTest {
     private ContractRepository repository;
     @Mock
     private PagedResourcesAssembler<Contract> assembler;
+    @Mock
+    private ApartmentService apartmentService;
+    @Mock
+    private TenantService tenantService;
 
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -156,5 +169,25 @@ public class ContractServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Persist a new Contract with Apartment Available Successfully")
+    public void testSaveContractSuccessfully() {
+        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+        Contract mockedContract = ContractMocks.mockContract();
+        Contract mockedContract2 = ContractMocks.mockContract();
+        mockedContract2.setUuid(UUID.randomUUID());
+
+        Apartment mockedAvailableApartment = ApartmentMocks.mockAvailableApartment();
+
+        when(repository.save(any(Contract.class))).thenReturn(mockedContract);
+        when(repository.findById(any(UUID.class))).thenReturn(Optional.of(mockedContract2));
+        when(apartmentService.findByNumberAp(mockedAvailableApartment.getNumberAp())).thenReturn(mockedAvailableApartment);
+
+        String result = service.save(mockContractSaveDTO, mockedAvailableApartment.getNumberAp());
+
+        assertNotNull(result);
+        assertEquals("Contract saved successfully", result);
     }
 }

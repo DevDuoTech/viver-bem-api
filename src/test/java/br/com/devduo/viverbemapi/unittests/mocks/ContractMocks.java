@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 
@@ -34,10 +35,17 @@ public class ContractMocks {
                 .build();
     }
 
-    public static ContractRequestUpdateDTO mockContractUpdateDTO(){
+    public static ContractRequestUpdateDTO mockContractUpdateDTO() {
         return ContractRequestUpdateDTO.builder()
                 .uuid(mockContract().getUuid())
                 .contractRequestDTO(mockContractDTO())
+                .build();
+    }
+
+    public static ContractRequestSaveDTO mockContractSaveDTO() {
+        return ContractRequestSaveDTO.builder()
+                .contractRequestDTO(mockContractDTO())
+                .tenantsRequestDTO(TenantMocks.mockActiveTenantDTO())
                 .build();
     }
 }
