@@ -6,15 +6,12 @@ import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
-import br.com.devduo.viverbemapi.models.Tenant;
-import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
 import br.com.devduo.viverbemapi.service.v1.TenantService;
 import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
-import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -172,7 +169,7 @@ public class ContractServiceTest {
     }
 
     @Test
-    @DisplayName("Persist a new Contract with Apartment Available Successfully")
+    @DisplayName("Persist a new Contract with available Apartment Successfully")
     public void testSaveContractSuccessfully() {
         ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
         Contract mockedContract = ContractMocks.mockContract();
@@ -189,5 +186,23 @@ public class ContractServiceTest {
 
         assertNotNull(result);
         assertEquals("Contract saved successfully", result);
+    }
+
+    @Test
+    @DisplayName("Tries to persist a new Contract with occupied Apartment and throws a BadRequestException")
+    public void testSaveContractThrowsBadRequestException() {
+        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+        Apartment mockedOccupiedApartment = ApartmentMocks.mockOccupiedApartment();
+
+        when(apartmentService.findByNumberAp(mockedOccupiedApartment.getNumberAp())).thenReturn(mockedOccupiedApartment);
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(mockContractSaveDTO, mockedOccupiedApartment.getNumberAp());
+        });
+
+        String expectedMessage = String.format("Apartment %s is currently occupied", mockedOccupiedApartment.getNumberAp());
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 }
