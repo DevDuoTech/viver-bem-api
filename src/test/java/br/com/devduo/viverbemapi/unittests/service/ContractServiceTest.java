@@ -205,4 +205,34 @@ public class ContractServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    @DisplayName("Tries to persist a new Contract without contractDTO and throws a BadRequestException")
+    public void testSaveContractWithoutArgThrowsBadRequestException() {
+        Apartment mockAvailableApartment = ApartmentMocks.mockAvailableApartment();
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(null, mockAvailableApartment.getNumberAp());
+        });
+
+        String expectedMessage = "ContractDTO cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to persist a new Contract without Apartment number and throws a BadRequestException")
+    public void testSaveContractWithoutApNumThrowsBadRequestException() {
+        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(mockContractSaveDTO, null);
+        });
+
+        String expectedMessage = "Apartment number cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
