@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.UUID;
 
+import br.com.devduo.viverbemapi.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class ContractService {
     @Autowired
     private ApartmentService apartmentService;
     @Autowired
-    private TenantService tenantService;
+    private TenantRepository tenantRepository;
     @Autowired
     private PagedResourcesAssembler<Contract> assembler;
 
@@ -76,8 +77,8 @@ public class ContractService {
                 .phone(tenantDto.getPhone())
                 .rg(tenantDto.getRg())
                 .birthDate(tenantDto.getBirthDate())
-                .birthLocal(tenantDto.getBirthState())
-                .isActive(true)
+                .birthLocal(tenantDto.getBirthLocal())
+                .isActive(tenantDto.getIsActive())
                 .build();
 
         Contract contract = Contract.builder()
@@ -93,7 +94,7 @@ public class ContractService {
 
         tenant.setContract(contract);
 
-        tenantService.save(tenant);
+        tenantRepository.save(tenant);
         contractRepository.save(contract);
 
         return "Contract saved successfully";

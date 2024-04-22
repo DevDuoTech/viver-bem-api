@@ -6,6 +6,7 @@ import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -86,9 +87,13 @@ public class TenantService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
     }
 
-    public Tenant save(Tenant tenant) {
-        if (tenant == null)
+    public Tenant save(TenantsRequestDTO dto) {
+        if (dto == null)
             throw new BadRequestException("Tenant cannot be null");
+
+        Tenant tenant = new Tenant();
+        BeanUtils.copyProperties(dto, tenant);
+
         return tenantRepository.save(tenant);
     }
 

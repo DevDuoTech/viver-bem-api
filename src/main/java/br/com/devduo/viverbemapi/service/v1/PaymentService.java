@@ -16,6 +16,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -33,6 +34,11 @@ public class PaymentService {
     @Autowired
     private PagedResourcesAssembler<Payment> assembler;
 
+    public Payment findById(Long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
+    }
+
     public PagedModel<EntityModel<Payment>> findAll(Pageable pageable) {
         Page<Payment> paymentPage = repository.findAll(pageable);
 
@@ -47,10 +53,12 @@ public class PaymentService {
         return assembler.toModel(paymentPage, link);
     }
 
-//    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
+    //    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
     public Payment save(PaymentRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("PaymentRequestDTO cannot be null");
+        if (dto.getPaymentValue() == null)
+            throw new BadRequestException("PaymentValue cannot be null");
 
         Tenant tenant = tenantRepository.findById(dto.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));

@@ -129,8 +129,8 @@ public class TenantController {
             }
     )
     @PostMapping
-    public ResponseEntity<Tenant> save(@RequestBody @Valid Tenant tenant) {
-        return new ResponseEntity<>(tenantService.save(tenant), HttpStatus.CREATED);
+    public ResponseEntity<Tenant> save(@RequestBody @Valid TenantsRequestDTO dto) {
+        return new ResponseEntity<>(tenantService.save(dto), HttpStatus.CREATED);
     }
 
     @Operation(

@@ -33,7 +33,7 @@ public class TenantsRequestDTO {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthDate;
     @NotEmpty(message = "{field.birthstate.required}")
-    private String birthState;
-    @NotEmpty
-    private boolean isActive;
+    private String birthLocal;
+    @NotNull
+    private Boolean isActive;
 }
