@@ -7,9 +7,9 @@ import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
-import br.com.devduo.viverbemapi.service.v1.TenantService;
 import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ public class ContractServiceTest {
     @Mock
     private ApartmentService apartmentService;
     @Mock
-    private TenantService tenantService;
+    private TenantRepository tenantRepository;
 
     public void setUp() {
         MockitoAnnotations.openMocks(this);

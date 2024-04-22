@@ -55,6 +55,7 @@ public class PaymentService {
     }
 
     //    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
+    @Transactional
     public Payment save(PaymentRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("PaymentRequestDTO cannot be null");
