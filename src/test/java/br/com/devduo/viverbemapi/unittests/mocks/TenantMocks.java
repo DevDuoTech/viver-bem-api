@@ -39,7 +39,7 @@ public class TenantMocks {
                 .phone("888888888")
                 .rg("111111111")
                 .birthDate(LocalDate.of(1995, 5, 20))
-                .birthState("São Paulo")
+                .birthLocal("São Paulo")
                 .isActive(true)
                 .build();
     }
@@ -51,7 +51,7 @@ public class TenantMocks {
                 .phone("888888888")
                 .rg("111111111")
                 .birthDate(LocalDate.of(1995, 5, 20))
-                .birthState("São Paulo")
+                .birthLocal("São Paulo")
                 .isActive(false)
                 .build();
     }

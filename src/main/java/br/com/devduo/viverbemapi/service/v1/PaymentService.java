@@ -8,6 +8,7 @@ import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,13 +64,10 @@ public class PaymentService {
         Tenant tenant = tenantRepository.findById(dto.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
 
-        Payment payment = Payment.builder()
-                .price(dto.getPaymentValue())
-                .paymentDate(dto.getPaymentDate())
-                .paymentType(dto.getPaymentType())
-                .paymentStatus(dto.getPaymentStatus())
-                .tenant(tenant)
-                .build();
+        Payment payment = new Payment();
+        BeanUtils.copyProperties(dto, payment);
+
+        payment.setTenant(tenant);
 
         return repository.save(payment);
     }

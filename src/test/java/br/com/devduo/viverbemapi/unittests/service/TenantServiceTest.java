@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -307,19 +308,22 @@ public class TenantServiceTest {
     @Test
     @DisplayName("Persist a new Tenant and returns a Tenant successfully")
     public void testSaveSuccessfully() {
-        Tenant persistedTenant = TenantMocks.mockActiveTenant();
+        TenantsRequestDTO mockedActiveTenantDTO = TenantMocks.mockActiveTenantDTO();
+        Tenant tenant = new Tenant();
 
-        when(repository.save(persistedTenant)).thenReturn(persistedTenant);
+        BeanUtils.copyProperties(mockedActiveTenantDTO, tenant);
 
-        Tenant result = service.save(persistedTenant);
+        when(repository.save(tenant)).thenReturn(tenant);
 
-        verify(repository).save(persistedTenant);
+        Tenant result = service.save(mockedActiveTenantDTO);
+
+        verify(repository).save(tenant);
 
         assertNotNull(result);
 
-        assertEquals(persistedTenant.getId(), result.getId());
-        assertEquals(persistedTenant.getCpf(), result.getCpf());
-        assertEquals(persistedTenant.getRg(), result.getRg());
+        assertEquals(tenant.getId(), result.getId());
+        assertEquals(tenant.getCpf(), result.getCpf());
+        assertEquals(tenant.getRg(), result.getRg());
     }
 
     @Test
