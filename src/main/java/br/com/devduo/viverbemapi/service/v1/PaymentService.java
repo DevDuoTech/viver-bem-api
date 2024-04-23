@@ -17,7 +17,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -35,7 +34,7 @@ public class PaymentService {
     @Autowired
     private PagedResourcesAssembler<Payment> assembler;
 
-    public Payment findById(Long id){
+    public Payment findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
@@ -55,7 +54,6 @@ public class PaymentService {
     }
 
     //    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
-    @Transactional
     public Payment save(PaymentRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("PaymentRequestDTO cannot be null");
@@ -71,6 +69,10 @@ public class PaymentService {
         payment.setTenant(tenant);
 
         return repository.save(payment);
+    }
+
+    public List<Payment> findPaymentsByTenant(Long tenantId) {
+        return repository.findByTenantId(tenantId);
     }
 
     public List<Payment> findByYearMonth(YearMonth yearMonth) {

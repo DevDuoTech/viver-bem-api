@@ -90,10 +90,15 @@ public class PaymentController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    @GetMapping("/{date}")
+    @GetMapping("/date/{date}")
     public ResponseEntity<List<Payment>> findByPaymentDate(
             @PathVariable(name = "date") @DateTimeFormat(pattern = "yyyy_MM") YearMonth date
     ) {
         return ResponseEntity.ok(service.findByYearMonth(date));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Payment> findById(@PathVariable(value = "id") Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 }
