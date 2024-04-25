@@ -35,6 +35,9 @@ public class PaymentService {
     private PagedResourcesAssembler<Payment> assembler;
 
     public Payment findById(Long id) {
+        if (id == null)
+            throw new BadRequestException("Payment ID cannot be null");
+        
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }

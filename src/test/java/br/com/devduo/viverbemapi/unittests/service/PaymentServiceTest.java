@@ -1,6 +1,5 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
@@ -26,6 +25,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -99,6 +99,23 @@ public class PaymentServiceTest {
         assertEquals(paymentsMockList.get(0).getId(), resultFirstPayment.getId());
         assertEquals(paymentsMockList.get(0).getPaymentDate(), resultFirstPayment.getPaymentDate());
         assertEquals(paymentsMockList.get(0).getPaymentStatus(), resultFirstPayment.getPaymentStatus());
+    }
 
+    @Test
+    @DisplayName("Find a Payment by your ID and Payment successfully")
+    public void testFindByIdSuccessfully(){
+        Payment paymentMock = PaymentMocks.paidPaymentMock();
+
+        when(repository.findById(paymentMock.getId())).thenReturn(Optional.of(paymentMock));
+
+        Payment result = service.findById(paymentMock.getId());
+
+        assertNotNull(result);
+        assertNotNull(result.getId());
+
+        assertEquals(paymentMock.getPaymentDate(), result.getPaymentDate());
+        assertEquals(paymentMock.getPaymentStatus(), result.getPaymentStatus());
+        assertEquals(paymentMock.getPaymentType(), result.getPaymentType());
+        assertEquals(paymentMock.getPrice(), result.getPrice());
     }
 }
