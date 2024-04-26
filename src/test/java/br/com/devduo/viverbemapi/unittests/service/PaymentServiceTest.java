@@ -1,5 +1,7 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
@@ -26,9 +28,9 @@ import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -102,7 +104,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    @DisplayName("Find a Payment by your ID and Payment successfully")
+    @DisplayName("Find a Payment by your ID and returns a Payment successfully")
     public void testFindByIdSuccessfully(){
         Payment paymentMock = PaymentMocks.paidPaymentMock();
 
@@ -117,5 +119,18 @@ public class PaymentServiceTest {
         assertEquals(paymentMock.getPaymentStatus(), result.getPaymentStatus());
         assertEquals(paymentMock.getPaymentType(), result.getPaymentType());
         assertEquals(paymentMock.getPrice(), result.getPrice());
+    }
+
+    @Test
+    @DisplayName("Find a Payment with null ID and throw a BadRequestException")
+    public void testFindByIdAndThrowBadRequestException(){
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.findById(null);
+        });
+
+        String expectedMessage = "Payment ID cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 }
