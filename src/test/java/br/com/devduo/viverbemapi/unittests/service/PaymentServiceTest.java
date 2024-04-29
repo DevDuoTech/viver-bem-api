@@ -28,7 +28,6 @@ import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,6 +128,19 @@ public class PaymentServiceTest {
         });
 
         String expectedMessage = "Payment ID cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Find a Payment with unknown ID and throw a ResourceNotFoundException")
+    public void testFindByIdAndThrowResourceNotFoundException(){
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            service.findById(any(Long.class));
+        });
+
+        String expectedMessage = "No records found for this ID";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
