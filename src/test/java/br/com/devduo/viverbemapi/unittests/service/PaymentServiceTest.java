@@ -104,7 +104,7 @@ public class PaymentServiceTest {
 
     @Test
     @DisplayName("Find a Payment by your ID and returns a Payment successfully")
-    public void testFindByIdSuccessfully(){
+    public void testFindByIdSuccessfully() {
         Payment paymentMock = PaymentMocks.paidPaymentMock();
 
         when(repository.findById(paymentMock.getId())).thenReturn(Optional.of(paymentMock));
@@ -122,7 +122,7 @@ public class PaymentServiceTest {
 
     @Test
     @DisplayName("Find a Payment with null ID and throw a BadRequestException")
-    public void testFindByIdAndThrowBadRequestException(){
+    public void testFindByIdAndThrowBadRequestException() {
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             service.findById(null);
         });
@@ -135,12 +135,25 @@ public class PaymentServiceTest {
 
     @Test
     @DisplayName("Find a Payment with unknown ID and throw a ResourceNotFoundException")
-    public void testFindByIdAndThrowResourceNotFoundException(){
+    public void testFindByIdAndThrowResourceNotFoundException() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.findById(any(Long.class));
         });
 
         String expectedMessage = "No records found for this ID";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to save a Payment with null dto and throws a BadRequestException")
+    public void testSaveWithoutDtoParm() {
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(null);
+        });
+
+        String expectedMessage = "PaymentRequestDTO cannot be null";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
