@@ -1,5 +1,6 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
+import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Payment;
@@ -154,6 +155,22 @@ public class PaymentServiceTest {
         });
 
         String expectedMessage = "PaymentRequestDTO cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to save a Payment with null PaymentValue and throws a BadRequestException")
+    public void testSaveWithoutPaymentValue() {
+        PaymentRequestDTO paymentDtoMock = PaymentMocks.paidPaymentRequestDTO();
+        paymentDtoMock.setPaymentValue(null);
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(paymentDtoMock);
+        });
+
+        String expectedMessage = "PaymentValue cannot be null";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);

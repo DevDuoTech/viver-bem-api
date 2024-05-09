@@ -1,5 +1,6 @@
 package br.com.devduo.viverbemapi.unittests.mocks;
 
+import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.PaymentType;
 import br.com.devduo.viverbemapi.models.Payment;
@@ -33,5 +34,15 @@ public class PaymentMocks {
 
     public static List<Payment> paymentsMockList() {
         return List.of(payablePaymentMock(), paidPaymentMock());
+    }
+
+    public static PaymentRequestDTO paidPaymentRequestDTO() {
+        return PaymentRequestDTO.builder()
+                .paymentValue(BigDecimal.valueOf(500))
+                .paymentStatus(PaymentStatus.PAID)
+                .paymentType(PaymentType.CASH)
+                .paymentDate(LocalDate.of(2024, 3, 5))
+                .tenantId(TenantMocks.mockActiveTenant().getId())
+                .build();
     }
 }
