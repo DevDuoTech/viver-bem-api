@@ -175,4 +175,21 @@ public class PaymentServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    @DisplayName("Finds a list of Payments by Tenant ID successfully")
+    public void testFindPaymentByTenant() {
+        List<Payment> paymentsMockList = PaymentMocks.paymentsMockList();
+
+        when(repository.findByTenantId(1L)).thenReturn(paymentsMockList);
+
+        List<Payment> result = service.findPaymentsByTenant(1L);
+
+        assertNotNull(result);
+        assertEquals(paymentsMockList.size(), result.size());
+
+        assertEquals(paymentsMockList.get(0).getId(), result.get(0).getId());
+        assertEquals(paymentsMockList.get(0).getTenant(), result.get(0).getTenant());
+        assertEquals(paymentsMockList.get(0).getPaymentDate(), result.get(0).getPaymentDate());
+    }
 }
