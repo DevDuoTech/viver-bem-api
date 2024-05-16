@@ -37,7 +37,7 @@ public class PaymentService {
     public Payment findById(Long id) {
         if (id == null)
             throw new BadRequestException("Payment ID cannot be null");
-        
+
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
@@ -75,6 +75,8 @@ public class PaymentService {
     }
 
     public List<Payment> findPaymentsByTenant(Long tenantId) {
+        if (tenantId == null)
+            throw new BadRequestException("Tenant ID cannot be null");
         return repository.findByTenantId(tenantId);
     }
 
