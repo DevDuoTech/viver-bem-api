@@ -192,4 +192,17 @@ public class PaymentServiceTest {
         assertEquals(paymentsMockList.get(0).getTenant(), result.get(0).getTenant());
         assertEquals(paymentsMockList.get(0).getPaymentDate(), result.get(0).getPaymentDate());
     }
+
+    @Test
+    @DisplayName("Tries to find a list of Payments with a null Tenant ID and throws a BadRequestException")
+    public void testFindPaymentByTenantAndThrowsBadRequestException() {
+        Exception exception = assertThrows(BadRequestException.class, () -> {
+           service.findPaymentsByTenant(null);
+        });
+
+        String expectedMessage = "Tenant ID cannot be null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 }
