@@ -6,15 +6,15 @@ import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
+import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
+import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValidation;
+import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValueValidation;
 import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,12 +26,14 @@ import org.springframework.hateoas.PagedModel;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,10 +44,18 @@ public class PaymentServiceTest {
     private PaymentRepository repository;
     @Mock
     private PagedResourcesAssembler<Payment> assembler;
+    @Mock
+    private NonNullPaymentValidation nonNullPaymentValidation;
+    @Mock
+    private NonNullPaymentValueValidation nonNullPaymentValueValidation;
+    @Spy
+    private List<NewPaymentValidationStrategy> newPaymentValidationStrategies = new ArrayList<>();
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        newPaymentValidationStrategies.add(nonNullPaymentValidation);
+        newPaymentValidationStrategies.add(nonNullPaymentValueValidation);
     }
 
     @Test
@@ -150,6 +160,9 @@ public class PaymentServiceTest {
     @Test
     @DisplayName("Tries to save a Payment with null dto and throws a BadRequestException")
     public void testSaveWithoutDtoParm() {
+        doThrow(new BadRequestException("PaymentRequestDTO cannot be null"))
+                .when(nonNullPaymentValidation).execute(null);
+
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             service.save(null);
         });
@@ -165,6 +178,9 @@ public class PaymentServiceTest {
     public void testSaveWithoutPaymentValue() {
         PaymentRequestDTO paymentDtoMock = PaymentMocks.paidPaymentRequestDTO();
         paymentDtoMock.setPaymentValue(null);
+
+        doThrow(new BadRequestException("PaymentValue cannot be null"))
+                .when(nonNullPaymentValueValidation).execute(paymentDtoMock);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             service.save(paymentDtoMock);
