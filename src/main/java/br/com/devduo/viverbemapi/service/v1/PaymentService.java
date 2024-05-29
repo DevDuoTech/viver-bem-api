@@ -8,6 +8,7 @@ import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
+import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,8 @@ public class PaymentService {
     private TenantRepository tenantRepository;
     @Autowired
     private PagedResourcesAssembler<Payment> assembler;
+    @Autowired
+    private List<NewPaymentValidationStrategy> newPaymentValidationStrategies;
 
     public Payment findById(Long id) {
         if (id == null)
@@ -58,16 +61,14 @@ public class PaymentService {
 
     //    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
     public Payment save(PaymentRequestDTO dto) {
-        if (dto == null)
-            throw new BadRequestException("PaymentRequestDTO cannot be null");
-        if (dto.getPaymentValue() == null)
-            throw new BadRequestException("PaymentValue cannot be null");
+        newPaymentValidationStrategies.forEach(strategy -> strategy.execute(dto));
 
         Tenant tenant = tenantRepository.findById(dto.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
 
         Payment payment = new Payment();
         BeanUtils.copyProperties(dto, payment);
+        payment.setPrice(dto.getPaymentValue());
 
         payment.setTenant(tenant);
 
