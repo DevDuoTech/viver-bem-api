@@ -4,6 +4,7 @@ import br.com.devduo.viverbemapi.controller.v1.PaymentController;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
@@ -18,10 +19,14 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,6 +39,8 @@ public class PaymentService {
     private TenantRepository tenantRepository;
     @Autowired
     private PagedResourcesAssembler<Payment> assembler;
+    @Autowired
+    private ContractService contractService;
     @Autowired
     private List<NewPaymentValidationStrategy> newPaymentValidationStrategies;
 
@@ -59,20 +66,47 @@ public class PaymentService {
         return assembler.toModel(paymentPage, link);
     }
 
-    //    TODO make this method transactional and coverage situations if paymentValue lower or greater than contract price
-    public Payment save(PaymentRequestDTO dto) {
+    @Transactional
+    public String save(PaymentRequestDTO dto) {
         newPaymentValidationStrategies.forEach(strategy -> strategy.execute(dto));
 
         Tenant tenant = tenantRepository.findById(dto.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
+        Contract contract = tenant.getContract();
+        int numberOfMonthsToPay = dto.getPaymentValue().divide(contract.getPrice()).intValue();
+        int monthsLeftToPay = contractService.monthsLeftToPay(contract.getUuid());
 
-        Payment payment = new Payment();
-        BeanUtils.copyProperties(dto, payment);
-        payment.setPrice(dto.getPaymentValue());
+        if (monthsLeftToPay == 0) {
+            throw new BadRequestException("All payments linked to the %s contract have been debited".formatted(contract.getUuid()));
+        }
 
-        payment.setTenant(tenant);
+        List<LocalDate> monthsPaid = new ArrayList<>();
+        LocalDate paymentDate = dto.getPaymentDate();
 
-        return repository.save(payment);
+        for (int i = 0; i < numberOfMonthsToPay && monthsLeftToPay > 0; i++) {
+            Payment payment = new Payment();
+            if (i > 0) {
+                paymentDate = paymentDate.plusMonths(1);
+            }
+
+            BeanUtils.copyProperties(dto, payment);
+            payment.setPrice(contract.getPrice());
+            payment.setTenant(tenant);
+            payment.setPaymentDate(paymentDate);
+
+            monthsPaid.add(payment.getPaymentDate());
+
+            repository.save(payment);
+
+            monthsLeftToPay--;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        String formattedMonths = monthsPaid.stream()
+                .map(date -> date.format(formatter))
+                .collect(Collectors.joining(", "));
+
+        return String.format("Payment for the months %s has been successfully registered", formattedMonths);
     }
 
     public List<Payment> findPaymentsByTenant(Long tenantId) {

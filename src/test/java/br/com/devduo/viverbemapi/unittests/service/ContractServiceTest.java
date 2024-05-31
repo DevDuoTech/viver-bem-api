@@ -6,12 +6,15 @@ import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
+import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
+import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
 import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +55,8 @@ public class ContractServiceTest {
     private ApartmentService apartmentService;
     @Mock
     private TenantRepository tenantRepository;
+    @Mock
+    private PaymentRepository paymentRepository;
 
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -154,7 +159,7 @@ public class ContractServiceTest {
         assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getPrice(), result.getPrice());
         assertEquals(mockedContractUpdateDTO.getContractRequestDTO().getDueDate(), result.getDueDate());
     }
-    
+
     @Test
     @DisplayName("Tries to update a Contract and throws a BadRequestException")
     public void testUpdateAndThrowsBadRequestException() {
@@ -234,5 +239,22 @@ public class ContractServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Checks the number of months left to pay on a Contract successfully")
+    public void testMonthsLeftToPay() {
+        Contract mockedContract = ContractMocks.mockContract();
+        List<Payment> paymentsMockList = PaymentMocks.paymentsMockList();
+        mockedContract.getTenant().setContract(mockedContract);
+        mockedContract.getTenant().setPayments(paymentsMockList);
+
+        when(repository.findById(mockedContract.getUuid())).thenReturn(Optional.of(mockedContract));
+        when(paymentRepository.findPaymentsByContractUuid(mockedContract.getUuid())).thenReturn(paymentsMockList);
+
+        long monthsLeftToPay = service.monthsLeftToPay(mockedContract.getUuid());
+
+        assertNotEquals(monthsLeftToPay, paymentsMockList.size());
+        assertEquals(4, monthsLeftToPay);
     }
 }

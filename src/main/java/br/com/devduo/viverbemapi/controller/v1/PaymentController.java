@@ -70,7 +70,7 @@ public class PaymentController {
             }
     )
     @PostMapping
-    public ResponseEntity<Payment> save(@RequestBody PaymentRequestDTO dto) {
+    public ResponseEntity<String> save(@RequestBody PaymentRequestDTO dto) {
         return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
     }
 
