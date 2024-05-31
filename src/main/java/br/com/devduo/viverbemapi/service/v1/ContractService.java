@@ -3,9 +3,14 @@ package br.com.devduo.viverbemapi.service.v1;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
+import br.com.devduo.viverbemapi.models.Payment;
+import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +41,8 @@ public class ContractService {
     private ApartmentService apartmentService;
     @Autowired
     private TenantRepository tenantRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
     @Autowired
     private PagedResourcesAssembler<Contract> assembler;
 
@@ -107,12 +114,16 @@ public class ContractService {
         ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
         Contract contract = findByUuid(dto.getUuid());
 
-        contract.setStartDate(contractRequestDTO.getStartDate());
-        contract.setEndDate(contractRequestDTO.getEndDate());
-        contract.setPrice(contractRequestDTO.getPrice());
-        contract.setDescription(contractRequestDTO.getDescription());
-        contract.setDueDate(contractRequestDTO.getDueDate());
+        BeanUtils.copyProperties(contractRequestDTO, contract);
 
         contractRepository.save(contract);
+    }
+    
+    public int monthsLeftToPay(UUID uuid){
+        Contract contract = findByUuid(uuid);
+        List<Payment> paymentList = paymentRepository.findPaymentsByContractUuid(uuid);
+
+        long durationOfStay = ChronoUnit.MONTHS.between(contract.getStartDate(), contract.getEndDate()) + 1;
+        return (int) (durationOfStay - paymentList.size());
     }
 }
