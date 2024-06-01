@@ -10,6 +10,7 @@ import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
+import br.com.devduo.viverbemapi.utils.DateFormatter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -72,7 +71,12 @@ public class PaymentService {
 
         Tenant tenant = tenantRepository.findById(dto.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
+
         Contract contract = tenant.getContract();
+        if (dto.getPaymentValue().compareTo(contract.getPrice()) < 0) {
+            throw new BadRequestException("Payment value is lesser than Contract price");
+        }
+
         int numberOfMonthsToPay = dto.getPaymentValue().divide(contract.getPrice()).intValue();
         int monthsLeftToPay = contractService.monthsLeftToPay(contract.getUuid());
 
@@ -81,8 +85,18 @@ public class PaymentService {
         }
 
         List<LocalDate> monthsPaid = new ArrayList<>();
-        LocalDate paymentDate = dto.getPaymentDate();
+        processPayment(dto, tenant, contract, numberOfMonthsToPay, monthsLeftToPay, monthsPaid);
 
+        String formattedMonths = DateFormatter.listLocalDateToString(monthsPaid);
+        return String.format("Payment for the months %s has been successfully registered", formattedMonths);
+    }
+
+    public void processPayment(
+            PaymentRequestDTO dto, Tenant tenant,
+            Contract contract, int numberOfMonthsToPay,
+            int monthsLeftToPay, List<LocalDate> monthsPaid
+    ) {
+        LocalDate paymentDate = dto.getPaymentDate();
         for (int i = 0; i < numberOfMonthsToPay && monthsLeftToPay > 0; i++) {
             Payment payment = new Payment();
             if (i > 0) {
@@ -100,13 +114,6 @@ public class PaymentService {
 
             monthsLeftToPay--;
         }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
-        String formattedMonths = monthsPaid.stream()
-                .map(date -> date.format(formatter))
-                .collect(Collectors.joining(", "));
-
-        return String.format("Payment for the months %s has been successfully registered", formattedMonths);
     }
 
     public List<Payment> findPaymentsByTenant(Long tenantId) {
