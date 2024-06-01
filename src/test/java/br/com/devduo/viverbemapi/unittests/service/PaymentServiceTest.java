@@ -3,13 +3,17 @@ package br.com.devduo.viverbemapi.unittests.service;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Payment;
+import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
 import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
 import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValidation;
 import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValueValidation;
+import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,8 +28,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +39,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentServiceTest {
@@ -220,5 +225,39 @@ public class PaymentServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Process multiple Payments successfully")
+    public void testProcessPayment(){
+        PaymentRequestDTO mockPaymentDto = PaymentMocks.paidPaymentRequestDTO();
+        mockPaymentDto.setPaymentValue(BigDecimal.valueOf(1500));
+
+        Tenant mockActiveTenant = TenantMocks.mockActiveTenant();
+        Contract mockedContract = ContractMocks.mockContract();
+        mockActiveTenant.setContract(mockedContract);
+
+        int numberOfMonthsToPay = mockPaymentDto.getPaymentValue()
+                .divide(mockedContract.getPrice())
+                .intValue();
+        int monthsLeftToPay = (int) (
+                ChronoUnit.MONTHS.between(
+                mockedContract.getStartDate(),
+                mockedContract.getEndDate()) + 1
+        );
+        List<LocalDate> monthsPaid = new ArrayList<>();
+
+        service.processPayment(
+                mockPaymentDto, mockActiveTenant,
+                mockedContract, numberOfMonthsToPay,
+                monthsLeftToPay, monthsPaid
+        );
+
+        assertEquals(3, monthsPaid.size());
+        assertEquals(mockPaymentDto.getPaymentDate(), monthsPaid.get(0));
+        assertEquals(mockPaymentDto.getPaymentDate().plusMonths(1), monthsPaid.get(1));
+        assertEquals(mockPaymentDto.getPaymentDate().plusMonths(2), monthsPaid.get(2));
+
+        verify(repository, times(3)).save(any(Payment.class));
     }
 }

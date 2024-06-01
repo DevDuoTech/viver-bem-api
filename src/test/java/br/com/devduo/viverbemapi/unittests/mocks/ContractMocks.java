@@ -15,7 +15,7 @@ public class ContractMocks {
                 .uuid(UUID.randomUUID())
                 .startDate(LocalDate.of(2024, 1, 5))
                 .endDate(LocalDate.of(2024, 6, 5))
-                .price(BigDecimal.valueOf(550))
+                .price(BigDecimal.valueOf(500))
                 .dueDate(5)
                 .description("A simple contract")
                 .hasGuarantee(true)
