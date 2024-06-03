@@ -1,25 +1,5 @@
 package br.com.devduo.viverbemapi.service.v1;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
-
-import br.com.devduo.viverbemapi.models.Payment;
-import br.com.devduo.viverbemapi.repository.PaymentRepository;
-import br.com.devduo.viverbemapi.repository.TenantRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.stereotype.Service;
-
 import br.com.devduo.viverbemapi.controller.v1.ContractController;
 import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
@@ -30,8 +10,27 @@ import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
+import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
+import br.com.devduo.viverbemapi.repository.PaymentRepository;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
+import br.com.devduo.viverbemapi.utils.DateUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class ContractService {
@@ -123,7 +122,10 @@ public class ContractService {
         Contract contract = findByUuid(uuid);
         List<Payment> paymentList = paymentRepository.findPaymentsByContractUuid(uuid);
 
-        long durationOfStay = ChronoUnit.MONTHS.between(contract.getStartDate(), contract.getEndDate()) + 1;
+        long durationOfStay = DateUtils.getMonthsBetweenDates(
+                contract.getStartDate(),
+                contract.getEndDate()
+        );
         return (int) (durationOfStay - paymentList.size());
     }
 }

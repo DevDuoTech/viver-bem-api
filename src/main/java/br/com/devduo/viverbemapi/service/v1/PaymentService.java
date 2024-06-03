@@ -10,7 +10,7 @@ import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
-import br.com.devduo.viverbemapi.utils.DateFormatter;
+import br.com.devduo.viverbemapi.utils.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -85,13 +85,13 @@ public class PaymentService {
         }
 
         List<LocalDate> monthsPaid = new ArrayList<>();
-        processPayment(dto, tenant, contract, numberOfMonthsToPay, monthsLeftToPay, monthsPaid);
+        processPayments(dto, tenant, contract, numberOfMonthsToPay, monthsLeftToPay, monthsPaid);
 
-        String formattedMonths = DateFormatter.listLocalDateToString(monthsPaid);
+        String formattedMonths = DateUtils.listLocalDateToString(monthsPaid);
         return String.format("Payment for the months %s has been successfully registered", formattedMonths);
     }
 
-    public void processPayment(
+    public void processPayments(
             PaymentRequestDTO dto, Tenant tenant,
             Contract contract, int numberOfMonthsToPay,
             int monthsLeftToPay, List<LocalDate> monthsPaid
