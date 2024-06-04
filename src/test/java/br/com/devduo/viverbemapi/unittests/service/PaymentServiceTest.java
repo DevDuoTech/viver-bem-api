@@ -244,12 +244,11 @@ public class PaymentServiceTest {
                 mockedContract.getStartDate(),
                 mockedContract.getEndDate()
         );
-        List<LocalDate> monthsPaid = new ArrayList<>();
 
-        service.processPayments(
+        List<LocalDate> monthsPaid = service.processPayments(
                 mockPaymentDto, mockActiveTenant,
                 mockedContract, numberOfMonthsToPay,
-                monthsLeftToPay, monthsPaid
+                monthsLeftToPay
         );
 
         assertEquals(1, monthsPaid.size());
@@ -276,12 +275,11 @@ public class PaymentServiceTest {
                 mockedContract.getStartDate(),
                 mockedContract.getEndDate()
         );
-        List<LocalDate> monthsPaid = new ArrayList<>();
 
-        service.processPayments(
+        List<LocalDate> monthsPaid = service.processPayments(
                 mockPaymentDto, mockActiveTenant,
                 mockedContract, numberOfMonthsToPay,
-                monthsLeftToPay, monthsPaid
+                monthsLeftToPay
         );
 
         assertEquals(2, monthsPaid.size());

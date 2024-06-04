@@ -12,6 +12,7 @@ import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
+import br.com.devduo.viverbemapi.service.v1.PaymentService;
 import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
@@ -57,6 +58,8 @@ public class ContractServiceTest {
     private TenantRepository tenantRepository;
     @Mock
     private PaymentRepository paymentRepository;
+    @Mock
+    private PaymentService paymentService;
 
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -186,6 +189,7 @@ public class ContractServiceTest {
         when(repository.save(any(Contract.class))).thenReturn(mockedContract);
         when(repository.findById(any(UUID.class))).thenReturn(Optional.of(mockedContract2));
         when(apartmentService.findByNumberAp(mockedAvailableApartment.getNumberAp())).thenReturn(mockedAvailableApartment);
+        when(paymentRepository.save(any(Payment.class))).thenReturn(any(Payment.class));
 
         String result = service.save(mockContractSaveDTO, mockedAvailableApartment.getNumberAp());
 

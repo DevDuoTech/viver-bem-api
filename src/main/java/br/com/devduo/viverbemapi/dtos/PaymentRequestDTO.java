@@ -25,5 +25,7 @@ public class PaymentRequestDTO {
     private PaymentStatus paymentStatus;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate paymentDate;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate competency;
     private Long tenantId;
 }

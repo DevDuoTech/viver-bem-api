@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -21,4 +22,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findPaymentsByContractUuid(@Param("contractUuid") UUID contractUuid);
 
     List<Payment> findByPaymentDateBetween(LocalDate firstDayOfMonth, LocalDate lastDayOfMonth);
+
+    @Query("SELECT p FROM Payment p " +
+            "JOIN p.tenant t " +
+            "WHERE p.competency = :competency AND t.id = :tenantId")
+    Optional<Payment> findByCompetencyAndTenantId(@Param("competency") LocalDate competency, @Param("tenantId") Long tenantId);
 }

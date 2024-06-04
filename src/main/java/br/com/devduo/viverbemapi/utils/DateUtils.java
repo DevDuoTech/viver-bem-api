@@ -15,7 +15,11 @@ public class DateUtils {
         return formattedMonths;
     }
 
-    public static int getMonthsBetweenDates(LocalDate startDate, LocalDate endDate){
+    public static LocalDate formatCompetency(Integer dueDate, LocalDate competency) {
+        return LocalDate.of(competency.getYear(), competency.getMonth(), dueDate);
+    }
+
+    public static int getMonthsBetweenDates(LocalDate startDate, LocalDate endDate) {
         long period = ChronoUnit.MONTHS.between(startDate, endDate) + 1;
         return (int) period;
     }

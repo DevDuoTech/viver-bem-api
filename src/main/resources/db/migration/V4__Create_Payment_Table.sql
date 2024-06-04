@@ -5,6 +5,7 @@ CREATE TABLE payment (
    payment_type VARCHAR(255),
    payment_status VARCHAR(255),
    tenant_id BIGINT NOT NULL,
+   competency date,
    CONSTRAINT pk_payment PRIMARY KEY (id)
 );
 

@@ -1,10 +1,8 @@
 package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.ContractController;
-import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
-import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
-import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
-import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
+import br.com.devduo.viverbemapi.dtos.*;
+import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.StatusApart;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
@@ -25,7 +23,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +44,8 @@ public class ContractService {
     private PaymentRepository paymentRepository;
     @Autowired
     private PagedResourcesAssembler<Contract> assembler;
+    @Autowired
+    private PaymentService paymentService;
 
     public PagedModel<EntityModel<Contract>> findAll(Pageable pageable) {
         Page<Contract> contractPage = contractRepository.findAll(pageable);
@@ -62,6 +64,7 @@ public class ContractService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this UUID"));
     }
 
+    @Transactional
     public String save(ContractRequestSaveDTO dto, Long numberAp) {
         if (dto == null)
             throw new BadRequestException("ContractDTO cannot be null");
@@ -77,37 +80,40 @@ public class ContractService {
 
         apartment.setStatus(StatusApart.OCCUPIED);
 
-        Tenant tenant = Tenant.builder()
-                .name(tenantDto.getName())
-                .cpf(tenantDto.getCpf())
-                .phone(tenantDto.getPhone())
-                .rg(tenantDto.getRg())
-                .birthDate(tenantDto.getBirthDate())
-                .birthLocal(tenantDto.getBirthLocal())
-                .isActive(tenantDto.getIsActive())
-                .build();
+        Tenant tenant = new Tenant();
+        BeanUtils.copyProperties(tenantDto, tenant);
 
         Contract contract = Contract.builder()
-                .startDate(contractRequestDTO.getStartDate())
-                .endDate(contractRequestDTO.getEndDate())
-                .dueDate(contractRequestDTO.getDueDate())
-                .price(contractRequestDTO.getPrice())
-                .description(contractRequestDTO.getDescription())
-                .hasGuarantee(contractRequestDTO.getHasGuarantee())
                 .apartment(apartment)
                 .tenant(tenant)
                 .build();
+        BeanUtils.copyProperties(contractRequestDTO, contract);
 
         tenant.setContract(contract);
 
         tenantRepository.save(tenant);
         contractRepository.save(contract);
 
+        int period = DateUtils.getMonthsBetweenDates(contract.getStartDate(), contract.getEndDate());
+        if (contract.getHasGuarantee())
+            period++;
+
+        for (int i = 0; i < period; i++) {
+            Payment paymentBase = Payment.builder()
+                    .tenant(tenant)
+                    .price(contract.getPrice())
+                    .paymentStatus(PaymentStatus.PAYABLE)
+                    .competency(DateUtils.formatCompetency(contract.getDueDate(), contract.getStartDate()).plusMonths(i))
+                    .build();
+
+            paymentRepository.save(paymentBase);
+        }
+
         return "Contract saved successfully";
     }
 
     public void update(ContractRequestUpdateDTO dto) {
-        if(dto == null)
+        if (dto == null)
             throw new BadRequestException("ContractRequestDTO cannot be null");
 
         ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
@@ -117,8 +123,8 @@ public class ContractService {
 
         contractRepository.save(contract);
     }
-    
-    public int monthsLeftToPay(UUID uuid){
+
+    public int monthsLeftToPay(UUID uuid) {
         Contract contract = findByUuid(uuid);
         List<Payment> paymentList = paymentRepository.findPaymentsByContractUuid(uuid);
 

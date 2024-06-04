@@ -33,6 +33,8 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate competency;
 
     @ManyToOne
     @JsonIgnore

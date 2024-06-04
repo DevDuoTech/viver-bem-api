@@ -2,6 +2,7 @@ package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.PaymentController;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
+import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Contract;
@@ -24,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -84,36 +85,44 @@ public class PaymentService {
             throw new BadRequestException("All payments linked to the %s contract have been debited".formatted(contract.getUuid()));
         }
 
-        List<LocalDate> monthsPaid = new ArrayList<>();
-        processPayments(dto, tenant, contract, numberOfMonthsToPay, monthsLeftToPay, monthsPaid);
+        List<LocalDate> monthsPaid = processPayments(dto, tenant, numberOfMonthsToPay);
 
         String formattedMonths = DateUtils.listLocalDateToString(monthsPaid);
         return String.format("Payment for the months %s has been successfully registered", formattedMonths);
     }
 
-    public void processPayments(
-            PaymentRequestDTO dto, Tenant tenant,
-            Contract contract, int numberOfMonthsToPay,
-            int monthsLeftToPay, List<LocalDate> monthsPaid
-    ) {
+    public List<LocalDate> processPayments(PaymentRequestDTO dto, Tenant tenant, int numberOfMonthsToPay) {
+        List<LocalDate> monthsPaid = new ArrayList<>();
         LocalDate paymentDate = dto.getPaymentDate();
+
+        List<Payment> paymentsPayable = tenant.getPayments()
+                .stream()
+                .filter(p -> Objects.equals(p.getPaymentStatus(), PaymentStatus.PAYABLE.toString()))
+                .sorted(Comparator.comparing(Payment::getCompetency))
+                .toList();
+
+        int monthsLeftToPay = paymentsPayable.size();
+
         for (int i = 0; i < numberOfMonthsToPay && monthsLeftToPay > 0; i++) {
-            Payment payment = new Payment();
             if (i > 0) {
                 paymentDate = paymentDate.plusMonths(1);
             }
 
-            BeanUtils.copyProperties(dto, payment);
-            payment.setPrice(contract.getPrice());
-            payment.setTenant(tenant);
-            payment.setPaymentDate(paymentDate);
+            Payment payment = paymentsPayable.get(i);
+            update(payment);
 
             monthsPaid.add(payment.getPaymentDate());
 
-            repository.save(payment);
-
             monthsLeftToPay--;
         }
+
+        return monthsPaid;
+    }
+
+    public Payment update(Payment payment) {
+        Payment paymentToUpdate = findById(payment.getId());
+        BeanUtils.copyProperties(payment, paymentToUpdate);
+        return repository.save(paymentToUpdate);
     }
 
     public List<Payment> findPaymentsByTenant(Long tenantId) {
