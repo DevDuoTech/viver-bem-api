@@ -14,7 +14,6 @@ import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValueValida
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
-import br.com.devduo.viverbemapi.utils.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -230,61 +229,79 @@ public class PaymentServiceTest {
     @Test
     @DisplayName("Process Payment successfully")
     public void testProcessPayments() {
-        PaymentRequestDTO mockPaymentDto = PaymentMocks.paidPaymentRequestDTO();
-        mockPaymentDto.setPaymentValue(BigDecimal.valueOf(500));
+        PaymentRequestDTO mockPaymentDto = PaymentMocks.payablePaymentRequestDTO();
+        mockPaymentDto.setPaymentValue(BigDecimal.valueOf(1000));
 
         Tenant mockActiveTenant = TenantMocks.mockActiveTenant();
         Contract mockedContract = ContractMocks.mockContract();
-        mockActiveTenant.setContract(mockedContract);
+        mockedContract.setPrice(BigDecimal.valueOf(500));
+
+        Payment payablePayment1 = PaymentMocks.payablePaymentMock();
+        payablePayment1.setId(1L);
+        payablePayment1.setCompetency(LocalDate.of(2024, 1, 5));
+
+        Payment payablePayment2 = PaymentMocks.payablePaymentMock();
+        payablePayment2.setId(2L);
+        payablePayment2.setCompetency(LocalDate.of(2024, 2, 5));
+
+        mockActiveTenant.setPayments(List.of(payablePayment1, payablePayment2));
+
+        when(repository.findById(1L)).thenReturn(Optional.of(payablePayment1));
+        when(repository.findById(2L)).thenReturn(Optional.of(payablePayment2));
 
         int numberOfMonthsToPay = mockPaymentDto.getPaymentValue()
                 .divide(mockedContract.getPrice())
                 .intValue();
-        int monthsLeftToPay = DateUtils.getMonthsBetweenDates(
-                mockedContract.getStartDate(),
-                mockedContract.getEndDate()
-        );
 
         List<LocalDate> monthsPaid = service.processPayments(
-                mockPaymentDto, mockActiveTenant,
-                mockedContract, numberOfMonthsToPay,
-                monthsLeftToPay
+                mockPaymentDto, mockActiveTenant, numberOfMonthsToPay
         );
 
-        assertEquals(1, monthsPaid.size());
-        assertEquals(mockPaymentDto.getPaymentDate(), monthsPaid.get(0));
+        assertEquals(2, monthsPaid.size());
+        assertEquals(payablePayment1.getCompetency(), monthsPaid.get(0));
+        assertEquals(payablePayment2.getCompetency(), monthsPaid.get(1));
 
-        verify(repository, times(1)).save(any(Payment.class));
+        verify(repository, times(2)).save(any(Payment.class));
     }
 
     @Test
     @DisplayName("Try to process a payment that has already been debited and cancel the processing")
     public void testProcessPaymentsAlreadyPaid() {
-        PaymentRequestDTO mockPaymentDto = PaymentMocks.paidPaymentRequestDTO();
+        PaymentRequestDTO mockPaymentDto = PaymentMocks.payablePaymentRequestDTO();
         mockPaymentDto.setPaymentValue(BigDecimal.valueOf(3500));
 
         Tenant mockActiveTenant = TenantMocks.mockActiveTenant();
         Contract mockedContract = ContractMocks.mockContract();
-        mockedContract.setEndDate(LocalDate.of(2024, 2, 5));
-        mockActiveTenant.setContract(mockedContract);
+        mockedContract.setPrice(BigDecimal.valueOf(500));
+
+        Payment payablePayment1 = PaymentMocks.paidPaymentMock();
+        payablePayment1.setId(1L);
+        payablePayment1.setCompetency(LocalDate.of(2024, 1, 5));
+
+        Payment payablePayment2 = PaymentMocks.payablePaymentMock();
+        payablePayment2.setId(2L);
+        payablePayment2.setCompetency(LocalDate.of(2024, 2, 5));
+
+        Payment payablePayment3 = PaymentMocks.payablePaymentMock();
+        payablePayment3.setId(3L);
+        payablePayment3.setCompetency(LocalDate.of(2024, 3, 5));
+
+        mockActiveTenant.setPayments(List.of(payablePayment1, payablePayment2, payablePayment3));
+
+        when(repository.findById(2L)).thenReturn(Optional.of(payablePayment2));
+        when(repository.findById(3L)).thenReturn(Optional.of(payablePayment3));
 
         int numberOfMonthsToPay = mockPaymentDto.getPaymentValue()
                 .divide(mockedContract.getPrice())
                 .intValue();
-        int monthsLeftToPay = DateUtils.getMonthsBetweenDates(
-                mockedContract.getStartDate(),
-                mockedContract.getEndDate()
-        );
 
         List<LocalDate> monthsPaid = service.processPayments(
-                mockPaymentDto, mockActiveTenant,
-                mockedContract, numberOfMonthsToPay,
-                monthsLeftToPay
+                mockPaymentDto, mockActiveTenant, numberOfMonthsToPay
         );
 
         assertEquals(2, monthsPaid.size());
-        assertEquals(mockPaymentDto.getPaymentDate(), monthsPaid.get(0));
-        assertEquals(mockPaymentDto.getPaymentDate().plusMonths(1), monthsPaid.get(1));
+        assertEquals(payablePayment2.getCompetency(), monthsPaid.get(0));
+        assertEquals(payablePayment3.getCompetency(), monthsPaid.get(1));
 
         verify(repository, times(2)).save(any(Payment.class));
     }

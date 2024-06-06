@@ -93,25 +93,20 @@ public class PaymentService {
 
     public List<LocalDate> processPayments(PaymentRequestDTO dto, Tenant tenant, int numberOfMonthsToPay) {
         List<LocalDate> monthsPaid = new ArrayList<>();
-        LocalDate paymentDate = dto.getPaymentDate();
 
         List<Payment> paymentsPayable = tenant.getPayments()
                 .stream()
-                .filter(p -> Objects.equals(p.getPaymentStatus(), PaymentStatus.PAYABLE.toString()))
+                .filter(p -> p.getPaymentStatus() == PaymentStatus.PAYABLE)
                 .sorted(Comparator.comparing(Payment::getCompetency))
                 .toList();
 
         int monthsLeftToPay = paymentsPayable.size();
 
         for (int i = 0; i < numberOfMonthsToPay && monthsLeftToPay > 0; i++) {
-            if (i > 0) {
-                paymentDate = paymentDate.plusMonths(1);
-            }
-
             Payment payment = paymentsPayable.get(i);
             update(payment);
 
-            monthsPaid.add(payment.getPaymentDate());
+            monthsPaid.add(payment.getCompetency());
 
             monthsLeftToPay--;
         }
