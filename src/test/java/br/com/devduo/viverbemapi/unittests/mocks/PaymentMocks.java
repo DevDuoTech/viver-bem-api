@@ -55,7 +55,7 @@ public class PaymentMocks {
                 .paymentType(PaymentType.CASH)
                 .paymentDate(LocalDate.of(2024, 3, 5))
                 .tenantId(TenantMocks.mockActiveTenant().getId())
-                .competency(LocalDate.of(2024,1,5))
+                .competency(LocalDate.of(2024,2,5))
                 .build();
     }
 }

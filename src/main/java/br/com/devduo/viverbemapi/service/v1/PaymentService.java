@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -78,40 +77,32 @@ public class PaymentService {
             throw new BadRequestException("Payment value is lesser than Contract price");
         }
 
-        int numberOfMonthsToPay = dto.getPaymentValue().divide(contract.getPrice()).intValue();
         int monthsLeftToPay = contractService.monthsLeftToPay(contract.getUuid());
 
         if (monthsLeftToPay == 0) {
             throw new BadRequestException("All payments linked to the %s contract have been debited".formatted(contract.getUuid()));
         }
 
-        List<LocalDate> monthsPaid = processPayments(dto, tenant, numberOfMonthsToPay);
-
-        String formattedMonths = DateUtils.listLocalDateToString(monthsPaid);
-        return String.format("Payment for the months %s has been successfully registered", formattedMonths);
+        return processPayment(dto, tenant);
     }
 
-    public List<LocalDate> processPayments(PaymentRequestDTO dto, Tenant tenant, int numberOfMonthsToPay) {
-        List<LocalDate> monthsPaid = new ArrayList<>();
+    public String processPayment(PaymentRequestDTO dto, Tenant tenant) {
+        Payment payment = repository.findByCompetencyAndTenantId(dto.getCompetency(), tenant.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                                "Payment for competency %s not found".formatted(dto.getCompetency())
+                ));
 
-        List<Payment> paymentsPayable = tenant.getPayments()
-                .stream()
-                .filter(p -> p.getPaymentStatus() == PaymentStatus.PAYABLE)
-                .sorted(Comparator.comparing(Payment::getCompetency))
-                .toList();
+        if (payment.getPaymentStatus() == PaymentStatus.PAID)
+            return "The payment for competency %s has already been debited".formatted(payment.getCompetency());
 
-        int monthsLeftToPay = paymentsPayable.size();
+        payment.setPaymentType(dto.getPaymentType());
+        payment.setPaymentDate(dto.getPaymentDate());
+        payment.setPaymentStatus(dto.getPaymentStatus());
 
-        for (int i = 0; i < numberOfMonthsToPay && monthsLeftToPay > 0; i++) {
-            Payment payment = paymentsPayable.get(i);
-            update(payment);
+        repository.save(payment);
 
-            monthsPaid.add(payment.getCompetency());
-
-            monthsLeftToPay--;
-        }
-
-        return monthsPaid;
+        String formattedMonths = DateUtils.listLocalDateToString(List.of(payment.getCompetency()));
+        return String.format("Payment for the month %s has been successfully registered", formattedMonths);
     }
 
     public Payment update(Payment payment) {
