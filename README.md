@@ -77,6 +77,8 @@ The project folder structure is organized as follows:
 |   |   |   |   |-- models
 |   |   |   |   |-- repository
 |   |   |   |   |-- service
+|   |   |   |   |-- strategy
+|   |   |   |   |-- utils
 |   |-- resources
 |   |   |-- db/migration
 |   |   |-- application.yaml

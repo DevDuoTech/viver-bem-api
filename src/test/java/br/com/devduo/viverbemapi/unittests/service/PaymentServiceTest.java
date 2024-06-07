@@ -1,7 +1,6 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
-import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Contract;
