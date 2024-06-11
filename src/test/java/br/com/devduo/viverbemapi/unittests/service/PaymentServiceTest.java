@@ -7,6 +7,8 @@ import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
+import br.com.devduo.viverbemapi.service.v1.ContractService;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
 import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
 import br.com.devduo.viverbemapi.strategy.impl.payment.NonNullPaymentValidation;
@@ -46,7 +48,11 @@ public class PaymentServiceTest {
     @InjectMocks
     private PaymentService service;
     @Mock
+    private ContractService contractService;
+    @Mock
     private PaymentRepository repository;
+    @Mock
+    private TenantRepository tenantRepository;
     @Mock
     private PagedResourcesAssembler<Payment> assembler;
     @Mock
@@ -160,6 +166,30 @@ public class PaymentServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Creates a new Payment and saves it successfully")
+    public void testSaveNewPaymentSuccessfully() {
+        PaymentRequestDTO mockDto = PaymentMocks.payablePaymentRequestDTO();
+        Tenant mockTenant = TenantMocks.mockActiveTenant();
+        Contract mockContract = ContractMocks.mockContract();
+        mockTenant.setContract(mockContract);
+        Payment mockPayment = PaymentMocks.payablePaymentMock();
+
+        when(tenantRepository.findById(mockDto.getTenantId())).thenReturn(Optional.of(mockTenant));
+        when(contractService.monthsLeftToPay(mockContract.getUuid())).thenReturn(1);
+        when(repository.findByCompetencyAndTenantId(mockDto.getCompetency(), mockTenant.getId()))
+                .thenReturn(Optional.of(mockPayment));
+
+        String result = service.save(mockDto);
+
+        assertNotNull(result);
+        assertTrue(result.contains("has been successfully registered"));
+        verify(repository).save(mockPayment);
+        verify(repository).findByCompetencyAndTenantId(mockDto.getCompetency(), mockTenant.getId());
+        verify(tenantRepository).findById(mockDto.getTenantId());
+        verify(contractService).monthsLeftToPay(mockContract.getUuid());
     }
 
     @Test
