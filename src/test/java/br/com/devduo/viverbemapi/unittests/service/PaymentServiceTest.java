@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -283,5 +284,28 @@ public class PaymentServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Updates a existent Payment successfully")
+    public void testUpdateSuccessfully() {
+        Payment existingPayablePayment = PaymentMocks.payablePaymentMock();
+        existingPayablePayment.setId(1L);
+        Payment existingPayablePaymentCopy = PaymentMocks.payablePaymentMock();
+        BeanUtils.copyProperties(existingPayablePayment, existingPayablePaymentCopy);
+
+        Payment paidedPaymentMock = PaymentMocks.paidPaymentMock();
+        paidedPaymentMock.setId(1L);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existingPayablePaymentCopy));
+        when(repository.save(existingPayablePaymentCopy)).thenReturn(paidedPaymentMock);
+
+        Payment result = service.update(paidedPaymentMock);
+
+        assertNotNull(result);
+        assertEquals(paidedPaymentMock.getId(), result.getId());
+
+        assertEquals(paidedPaymentMock.getPaymentStatus(), result.getPaymentStatus());
+        assertNotEquals(existingPayablePayment.getPaymentStatus(), result.getPaymentStatus());
     }
 }
