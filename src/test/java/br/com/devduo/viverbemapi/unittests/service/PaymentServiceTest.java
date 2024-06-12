@@ -32,6 +32,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -190,6 +191,28 @@ public class PaymentServiceTest {
         verify(repository).findByCompetencyAndTenantId(mockDto.getCompetency(), mockTenant.getId());
         verify(tenantRepository).findById(mockDto.getTenantId());
         verify(contractService).monthsLeftToPay(mockContract.getUuid());
+    }
+
+    @Test
+    @DisplayName("Tries to save a new Payment with value lower than contract price and throws a BandRequestException")
+    public void testSaveWithLowerValue() {
+        PaymentRequestDTO mockDto = PaymentMocks.payablePaymentRequestDTO();
+        mockDto.setPaymentValue(BigDecimal.valueOf(150));
+
+        Tenant mockTenant = TenantMocks.mockActiveTenant();
+        Contract mockContract = ContractMocks.mockContract();
+        mockTenant.setContract(mockContract);
+
+        when(tenantRepository.findById(mockTenant.getId())).thenReturn(Optional.of(mockTenant));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            service.save(mockDto);
+        });
+
+        String expectedMessage = "Payment value is lesser than Contract price";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
