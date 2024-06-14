@@ -190,12 +190,31 @@ public class PaymentServiceTest {
 
     @Test
     @DisplayName("Tries to save new Payment with non-existent Tenant and throws a ResourceNotFoundException")
-    public void testSaveWithoutTenantId(){
+    public void testSaveWithoutTenantId() {
         PaymentRequestDTO mockDto = PaymentMocks.payablePaymentRequestDTO();
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> service.save(mockDto));
 
         String expectedMessage = "No records found for this Tenant's ID";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Tries to make a Payment without the payment being available and throws a BadRequestException")
+    public void testSaveWithoutPaymentLeft() {
+        PaymentRequestDTO mockDto = PaymentMocks.payablePaymentRequestDTO();
+        Tenant mockTenant = TenantMocks.mockActiveTenant();
+        Contract mockContract = ContractMocks.mockContract();
+        mockTenant.setContract(mockContract);
+
+        when(tenantRepository.findById(mockDto.getTenantId())).thenReturn(Optional.of(mockTenant));
+        when(contractService.monthsLeftToPay(mockContract.getUuid())).thenReturn(0);
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> service.save(mockDto));
+
+        String expectedMessage = "All payments linked to the %s contract have been debited".formatted(mockContract.getUuid());
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
