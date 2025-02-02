@@ -17,7 +17,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SECURITY_JWT_TOKEN_SECRET=${SECRET_KEY}
       - SECURITY_JWT_TOKEN_TIME=3600000
-      - CORS_ORIGINPATTERNS=http://localhost:4200
+      - CORS_ORIGINPATTERNS=http://localhost:3000
       - SPRING_PROFILES_ACTIVE=dev
     restart: on-failure
     command: mvn spring-boot:run
