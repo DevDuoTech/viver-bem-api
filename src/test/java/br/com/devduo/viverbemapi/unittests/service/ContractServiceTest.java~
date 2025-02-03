@@ -77,7 +77,7 @@ public class ContractServiceTest {
         List<Contract> contractList = Arrays.asList(mockedContract, mockedContract2);
         Page<Contract> page = new PageImpl<>(contractList);
 
-        when(repository.findAllByTenantIs(pageable, null)).thenReturn(page);
+        when(repository.findAll(pageable)).thenReturn(page);
 
         EntityModel<Contract> entityModel1 = EntityModel.of(mockedContract);
         EntityModel<Contract> entityModel2 = EntityModel.of(mockedContract2);
