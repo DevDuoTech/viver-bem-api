@@ -34,8 +34,6 @@ public class Contract {
     private Integer dueDate;
     @Column(name = "has_guarantee")
     private Boolean hasGuarantee;
-    @Column(name = "is_active")
-    private Boolean isActive;
 
     @JsonIgnoreProperties({"tenant"})
     @OneToOne(mappedBy = "contract")

@@ -22,7 +22,6 @@ public class TenantsRequestDTO {
     @NotEmpty(message = "{field.name.required}")
     private String name;
     @Email(message = "{field.email.invalid}")
-    @NotEmpty(message = "{field.email.required}")
     private String email;
     @CPF(message = "{field.cpf.invalid}")
     @NotEmpty(message = "{field.cpf.required}")

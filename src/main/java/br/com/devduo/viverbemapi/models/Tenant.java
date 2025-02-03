@@ -22,6 +22,8 @@ public class Tenant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(unique = true)
+    private String email;
     @Column(unique = true, length = 11)
     private String cpf;
     @Column(length = 11)

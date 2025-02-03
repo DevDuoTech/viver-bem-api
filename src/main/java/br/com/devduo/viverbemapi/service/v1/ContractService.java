@@ -25,7 +25,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,11 +46,11 @@ public class ContractService {
     @Autowired
     private PaymentService paymentService;
 
-    public PagedModel<EntityModel<Contract>> findAll(Pageable pageable) {
-        Page<Contract> contractPage = contractRepository.findAll(pageable);
+    public PagedModel<EntityModel<Contract>> findAll(Pageable pageable, Long tenantId) {
+        Page<Contract> contractPage = contractRepository.findAllByTenantIs(pageable, tenantId);
 
         Link link = linkTo(methodOn(ContractController.class)
-                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .findAll(pageable, tenantId))
                 .withSelfRel();
 
         return assembler.toModel(contractPage, link);
@@ -112,6 +111,7 @@ public class ContractService {
         return "Contract saved successfully";
     }
 
+    @Transactional
     public void update(ContractRequestUpdateDTO dto) {
         if (dto == null)
             throw new BadRequestException("ContractRequestDTO cannot be null");

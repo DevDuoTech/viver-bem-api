@@ -43,7 +43,7 @@ public class AuthService {
         Role role = roleRepository.findByDescription(RoleEnum.USER);
 
         Tenant tenant = tenantRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found"))
 
         User user = User.builder()
                 .tenantId(tenant.getId())

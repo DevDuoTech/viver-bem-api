@@ -24,7 +24,6 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
-    @Column(name = "tenant_id")
     private Long tenantId;
     @Column(name = "profile_picture")
     private byte[] profilePicture;

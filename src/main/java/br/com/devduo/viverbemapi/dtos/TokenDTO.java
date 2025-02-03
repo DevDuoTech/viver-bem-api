@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenDTO {
+    private Long tenantId;
     private String email;
     private Boolean authenticated;
     private Date createAt;

@@ -18,5 +18,5 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Optional<Tenant> findByCPF(@Param("cpf") String cpf);
 
     @Query("SELECT t FROM Tenant t WHERE t.email = :email")
-    Optional<Tenant> findByEmail(@Email @NotBlank String email);
+    Optional<Object> findByEmail(@Email @NotBlank String email);
 }
