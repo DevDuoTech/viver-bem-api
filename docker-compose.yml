@@ -1,28 +1,28 @@
 version: '3'
 
 services:
-  api:
-    build: .
-    container_name: viver-bem-api
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-    expose:
-      - 8080
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/viverbem?createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SECURITY_JWT_TOKEN_SECRET=${SECRET_KEY}
-      - SECURITY_JWT_TOKEN_TIME=3600000
-      - CORS_ORIGINPATTERNS=http://localhost:4200
-      - SPRING_PROFILES_ACTIVE=dev
-    restart: on-failure
-    command: mvn spring-boot:run
-    networks:
-      - viver-bem-network
+#  api:
+#    build: .
+#    container_name: viver-bem-api
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+#    expose:
+#      - 8080
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/viverbem?createDatabaseIfNotExist=true
+#      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+#      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#      - SECURITY_JWT_TOKEN_SECRET=${SECRET_KEY}
+#      - SECURITY_JWT_TOKEN_TIME=3600000
+#      - CORS_ORIGINPATTERNS=http://localhost:4200
+#      - SPRING_PROFILES_ACTIVE=dev
+#    restart: on-failure
+#    command: mvn spring-boot:run
+#    networks:
+#      - viver-bem-network
 
   postgres:
     container_name: postgres-container
@@ -37,19 +37,6 @@ services:
       - "5432:5432"
     networks:
       - viver-bem-network
-
-  pgadmin:
-    container_name: pgadmin-container
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USERNAME}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    ports:
-      - "5050:80"
-    networks:
-      - viver-bem-network
-    depends_on:
-      - postgres
 
 networks:
   viver-bem-network:

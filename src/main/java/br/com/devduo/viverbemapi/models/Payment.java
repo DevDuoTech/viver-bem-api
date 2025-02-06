@@ -3,8 +3,6 @@ package br.com.devduo.viverbemapi.models;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +21,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal price;
+    private Double value;
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "payment_date")
     private LocalDate paymentDate;
@@ -37,8 +35,6 @@ public class Payment {
     private LocalDate competency;
 
     @ManyToOne
-    @JsonIgnore
-    @JsonIgnoreProperties({"tenant"})
-    @JoinColumn(name = "tenant_id", nullable=false)
+    @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 }

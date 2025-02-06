@@ -1,7 +1,6 @@
 package br.com.devduo.viverbemapi.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class Contract {
     @Column(name = "end_date")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate endDate;
-    private BigDecimal price;
+    private Double price;
     private String description;
     @Column(name = "due_date")
     private Integer dueDate;
@@ -37,15 +36,11 @@ public class Contract {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @JsonIgnoreProperties({"tenant"})
-    @OneToOne(mappedBy = "contract")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
 
-    @ManyToOne
-    @JoinTable(
-            name = "contract_apartment",
-            joinColumns = @JoinColumn(name = "contract_id"),
-            inverseJoinColumns = @JoinColumn(name = "apartment_id")
-    )
+    @OneToOne
+    @JoinColumn(name = "number_ap", referencedColumnName = "number_ap")
     private Apartment apartment;
 }

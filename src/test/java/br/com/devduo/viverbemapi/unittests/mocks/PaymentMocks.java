@@ -17,7 +17,7 @@ public class PaymentMocks {
                 .paymentType(PaymentType.CASH)
                 .paymentStatus(PaymentStatus.PAYABLE)
                 .paymentDate(LocalDate.of(2024, 3, 5))
-                .tenant(TenantMocks.mockActiveTenant())
+                .tenantId(TenantMocks.mockActiveTenant().getId())
                 .competency(LocalDate.of(2024,2,5))
                 .build();
     }
@@ -29,7 +29,7 @@ public class PaymentMocks {
                 .paymentType(PaymentType.CASH)
                 .paymentStatus(PaymentStatus.PAID)
                 .paymentDate(LocalDate.of(2024, 3, 5))
-                .tenant(TenantMocks.mockDisableTenant())
+                .tenantId(TenantMocks.mockActiveTenant().getId())
                 .competency(LocalDate.of(2024,1,5))
                 .build();
     }

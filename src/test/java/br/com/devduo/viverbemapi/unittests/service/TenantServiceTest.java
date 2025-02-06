@@ -1,18 +1,14 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.YearMonth;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
+import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
+import br.com.devduo.viverbemapi.exceptions.BadRequestException;
+import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.TenantRepository;
+import br.com.devduo.viverbemapi.service.v1.PaymentService;
+import br.com.devduo.viverbemapi.service.v1.TenantService;
+import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,15 +27,15 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 
-import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
-import br.com.devduo.viverbemapi.exceptions.BadRequestException;
-import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
-import br.com.devduo.viverbemapi.models.Tenant;
-import br.com.devduo.viverbemapi.repository.TenantRepository;
-import br.com.devduo.viverbemapi.service.v1.PaymentService;
-import br.com.devduo.viverbemapi.service.v1.TenantService;
-import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
-import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
+import java.time.YearMonth;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TenantServiceTest {
@@ -175,7 +171,6 @@ public class TenantServiceTest {
         assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
         assertEquals(expectedTenant.getRg(), resultTenant.getRg());
         assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
-        assertNull(resultTenant.getPayments());
     }
 
     @Test
@@ -217,7 +212,6 @@ public class TenantServiceTest {
         assertEquals(expectedTenant.getCpf(), resultTenant.getCpf());
         assertEquals(expectedTenant.getRg(), resultTenant.getRg());
         assertEquals(expectedTenant.getIsActive(), resultTenant.getIsActive());
-        assertNull(resultTenant.getPayments());
     }
 
     @Test
@@ -298,7 +292,7 @@ public class TenantServiceTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.findByCPF("foo");
         });
-        
+
         String expectedMessage = "No records found for this CPF";
         String actualMessage = exception.getMessage();
 

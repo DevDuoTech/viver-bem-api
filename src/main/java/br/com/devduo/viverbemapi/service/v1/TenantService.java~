@@ -34,6 +34,14 @@ public class TenantService {
     private PagedResourcesAssembler<Tenant> assembler;
 
     public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable, String name, YearMonth yearMonth, Boolean isActive) {
+        String orderField = "created_at";
+        String orderDirection = "DESC";
+
+        if (!pageable.getSort().isUnsorted()) {
+            orderField = pageable.getSort().get().iterator().next().getProperty();
+            orderDirection = pageable.getSort().get().iterator().next().getDirection().name();
+        }
+
         Page<Tenant> tenantsPage = tenantRepository.findAll(pageable);
         List<Tenant> tenantList = tenantsPage.get().toList();
 
@@ -52,7 +60,9 @@ public class TenantService {
 
         Link link = linkTo(methodOn(TenantController.class)
                 .findAll(
-                        pageable,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "{1},{2}".formatted(orderField, orderDirection),
                         name,
                         yearMonth,
                         isActive

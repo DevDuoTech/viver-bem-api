@@ -89,7 +89,7 @@ public class PaymentServiceTest {
 
         assertEquals(expectedPayment.getPaymentDate(), resultPayment.getPaymentDate());
         assertEquals(expectedPayment.getPaymentStatus(), resultPayment.getPaymentStatus());
-        assertEquals(expectedPayment.getTenant(), resultPayment.getTenant());
+        assertEquals(expectedPayment.getTenantId(), resultPayment.getTenantId());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class PaymentServiceTest {
         assertEquals(paymentMock.getPaymentDate(), result.getPaymentDate());
         assertEquals(paymentMock.getPaymentStatus(), result.getPaymentStatus());
         assertEquals(paymentMock.getPaymentType(), result.getPaymentType());
-        assertEquals(paymentMock.getPrice(), result.getPrice());
+        assertEquals(paymentMock.getValue(), result.getValue());
     }
 
     @Test
@@ -284,7 +284,7 @@ public class PaymentServiceTest {
         assertEquals(paymentsMockList.size(), result.size());
 
         assertEquals(paymentsMockList.get(0).getId(), result.get(0).getId());
-        assertEquals(paymentsMockList.get(0).getTenant(), result.get(0).getTenant());
+        assertEquals(paymentsMockList.get(0).getTenantId(), result.get(0).getTenantId());
         assertEquals(paymentsMockList.get(0).getPaymentDate(), result.get(0).getPaymentDate());
     }
 

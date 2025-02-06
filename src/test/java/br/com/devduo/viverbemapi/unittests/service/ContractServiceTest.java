@@ -109,7 +109,7 @@ public class ContractServiceTest {
         assertNotNull(result.getUuid());
 
         assertEquals(mockedContract.getUuid(), result.getUuid());
-        assertEquals(mockedContract.getApartment(), result.getApartment());
+        assertEquals(mockedContract.getNumberAp() , result.getNumberAp());
         assertEquals(mockedContract.getPrice(), result.getPrice());
         assertEquals(mockedContract.getStartDate(), result.getStartDate());
         assertEquals(mockedContract.getEndDate(), result.getEndDate());
@@ -251,7 +251,6 @@ public class ContractServiceTest {
         Contract mockedContract = ContractMocks.mockContract();
         List<Payment> paymentsMockList = PaymentMocks.paymentsMockList();
         mockedContract.getTenant().setContract(mockedContract);
-        mockedContract.getTenant().setPayments(paymentsMockList);
 
         when(repository.findById(mockedContract.getUuid())).thenReturn(Optional.of(mockedContract));
         when(paymentRepository.findPaymentsByContractUuid(mockedContract.getUuid())).thenReturn(paymentsMockList);

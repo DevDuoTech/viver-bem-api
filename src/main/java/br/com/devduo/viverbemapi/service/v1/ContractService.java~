@@ -100,7 +100,7 @@ public class ContractService {
         for (int i = 0; i < period; i++) {
             Payment paymentBase = Payment.builder()
                     .tenant(tenant)
-                    .value(contract.getPrice())
+                    .price(contract.getPrice())
                     .paymentStatus(PaymentStatus.PAYABLE)
                     .competency(DateUtils.formatCompetency(contract.getDueDate(), contract.getStartDate()).plusMonths(i))
                     .build();

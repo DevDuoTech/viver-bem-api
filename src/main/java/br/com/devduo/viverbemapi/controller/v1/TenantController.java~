@@ -58,11 +58,13 @@ public class TenantController {
     )
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<Tenant>>> findAll(
-            @ParameterObject Pageable pageable,
+            @ParameterObject Pageable pageable
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy_MM") YearMonth yearMonth,
             @RequestParam(value = "is_active", defaultValue = "true") Boolean isActive
     ) {
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "payments.paymentDate"));
         return ResponseEntity.ok(tenantService.findAll(pageable, name, yearMonth, isActive));
     }
 
