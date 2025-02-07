@@ -1,7 +1,6 @@
 package br.com.devduo.viverbemapi.unittests.mocks;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
 import br.com.devduo.viverbemapi.models.Tenant;
@@ -14,7 +13,7 @@ public class TenantMocks {
                 .cpf("00000000000")
                 .phone("999999999")
                 .rg("111111111")
-                .birthDate(new Date(1995, 5, 20))
+                .birthDate(LocalDate.of(1995, 5, 20))
                 .birthLocal("São Paulo")
                 .isActive(true)
                 .build();
@@ -27,7 +26,7 @@ public class TenantMocks {
                 .cpf("00000000000")
                 .phone("999999999")
                 .rg("111111111")
-                .birthDate(new Date(1995, 5, 20))
+                .birthDate(LocalDate.of(1995, 5, 20))
                 .birthLocal("São Paulo")
                 .isActive(false)
                 .build();
@@ -39,7 +38,7 @@ public class TenantMocks {
                 .cpf("11111111111")
                 .phone("888888888")
                 .rg("111111111")
-                .birthDate(new Date(1995, 5, 20))
+                .birthDate(LocalDate.of(1995, 5, 20))
                 .birthLocal("São Paulo")
                 .isActive(true)
                 .build();
@@ -51,7 +50,7 @@ public class TenantMocks {
                 .cpf("11111111111")
                 .phone("888888888")
                 .rg("111111111")
-                .birthDate(new Date(1995, 5, 20))
+                .birthDate(LocalDate.of(1995, 5, 20))
                 .birthLocal("São Paulo")
                 .isActive(false)
                 .build();
