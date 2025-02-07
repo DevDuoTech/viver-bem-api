@@ -1,10 +1,9 @@
 package br.com.devduo.viverbemapi.unittests.mocks;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
 import br.com.devduo.viverbemapi.models.Tenant;
+
+import java.util.Date;
 
 public class TenantMocks {
     public static Tenant mockActiveTenant() {
