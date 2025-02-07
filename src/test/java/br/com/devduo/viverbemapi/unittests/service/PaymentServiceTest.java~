@@ -224,7 +224,7 @@ public class PaymentServiceTest {
     @DisplayName("Tries to save a new Payment with value lower than contract price and throws a BadRequestException")
     public void testSaveWithLowerValue() {
         PaymentRequestDTO mockDto = PaymentMocks.payablePaymentRequestDTO();
-        mockDto.setPaymentValue(499.9);
+        mockDto.setPaymentValue(300.0);
 
         Tenant mockTenant = TenantMocks.mockActiveTenant();
         Contract mockContract = ContractMocks.mockContract();

@@ -73,7 +73,7 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
 
         Contract contract = tenant.getContract();
-        if (dto.getPaymentValue().compareTo(contract.getPrice()) < 0) {
+        if (dto.getPaymentValue() < contract.getPrice()) {
             throw new BadRequestException("Payment value is lesser than Contract price");
         }
 

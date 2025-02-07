@@ -28,7 +28,7 @@ public class ContractMocks {
         return ContractRequestDTO.builder()
                 .startDate(LocalDate.of(2024, 1, 5))
                 .endDate(LocalDate.of(2024, 6, 5))
-                .price(500.0)
+                .price(BigDecimal.valueOf(500))
                 .dueDate(15)
                 .hasGuarantee(true)
                 .description("A simple contract")

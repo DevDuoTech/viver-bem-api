@@ -186,6 +186,7 @@ public class TenantServiceTest {
         Page<Tenant> tenantPage = new PageImpl<>(tenantList);
 
         when(repository.findAll(pageable)).thenReturn(tenantPage);
+//        when(paymentService.findByYearMonth(YearMonth.of(2024, 4))).thenReturn(List.of());
 
         EntityModel<Tenant> entityModel = EntityModel.of(mockedTenant);
         List<EntityModel<Tenant>> entityModels = Arrays.asList(entityModel);

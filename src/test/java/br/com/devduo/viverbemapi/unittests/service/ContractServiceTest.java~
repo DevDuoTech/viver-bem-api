@@ -109,7 +109,7 @@ public class ContractServiceTest {
         assertNotNull(result.getUuid());
 
         assertEquals(mockedContract.getUuid(), result.getUuid());
-        assertEquals(mockedContract.getApartment() , result.getApartment());
+        assertEquals(mockedContract.getNumberAp() , result.getNumberAp());
         assertEquals(mockedContract.getPrice(), result.getPrice());
         assertEquals(mockedContract.getStartDate(), result.getStartDate());
         assertEquals(mockedContract.getEndDate(), result.getEndDate());

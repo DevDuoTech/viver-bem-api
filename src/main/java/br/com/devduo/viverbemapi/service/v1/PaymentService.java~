@@ -23,7 +23,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
@@ -74,7 +73,8 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this Tenant's ID"));
 
         Contract contract = tenant.getContract();
-        if (dto.getPaymentValue().compareTo(BigDecimal.valueOf(contract.getPrice())) < 0) {
+        System.out.println(dto.getPaymentValue() < contract.getPrice());
+        if (dto.getPaymentValue() < contract.getPrice()) {
             throw new BadRequestException("Payment value is lesser than Contract price");
         }
 

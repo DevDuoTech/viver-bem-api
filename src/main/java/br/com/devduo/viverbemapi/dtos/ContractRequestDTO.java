@@ -23,7 +23,7 @@ public class ContractRequestDTO {
     private LocalDate endDate;
     @NotNull(message = "{field.price.required}")
     @Positive(message = "{field.price.invalid}")
-    private BigDecimal price;
+    private Double price;
     @Min(1)
     @Max(31)
     private Integer dueDate;
