@@ -43,7 +43,7 @@ public class ApartmentService {
         Page<Apartment> apartmentPageFiltered = new PageImpl<>(apartmentList);
 
         Link link = linkTo(methodOn(ApartmentController.class)
-                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc", statusApart))
+                .findAll(pageable, statusApart))
                 .withSelfRel();
 
         return assembler.toModel(apartmentPageFiltered, link);

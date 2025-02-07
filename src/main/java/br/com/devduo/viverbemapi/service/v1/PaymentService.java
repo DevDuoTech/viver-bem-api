@@ -55,11 +55,7 @@ public class PaymentService {
         Page<Payment> paymentPage = repository.findAll(pageable);
 
         Link link = linkTo(methodOn(PaymentController.class)
-                .findAll(
-                        pageable.getPageNumber(),
-                        pageable.getPageSize(),
-                        "desc"
-                ))
+                .findAll(pageable))
                 .withSelfRel();
 
         return assembler.toModel(paymentPage, link);
