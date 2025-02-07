@@ -41,22 +41,6 @@ public class TenantController {
     @Autowired
     private TenantService tenantService;
 
-    @Operation(
-            summary = "Finds all Tenant",
-            description = "Finds all Tenant",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Tenant.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<Tenant>>> findAll(
             @ParameterObject Pageable pageable,
@@ -67,97 +51,28 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.findAll(pageable, name, yearMonth, isActive));
     }
 
-    @Operation(
-            summary = "Finds a Tenant",
-            description = "Finds a Tenant by ID",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Tenant.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @GetMapping("/{id}")
     public ResponseEntity<Tenant> findById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(tenantService.findById(id));
     }
 
-    @Operation(
-            summary = "Finds a Tenant",
-            description = "Finds a Tenant by CPF",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Tenant.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @GetMapping("/by-cpf")
     public ResponseEntity<Tenant> findByCPF(@RequestParam(value = "cpf") String cpf) {
         return ResponseEntity.ok(tenantService.findByCPF(cpf));
     }
 
-    @Operation(
-            summary = "Adds a new Tenant",
-            description = "Adds a new Tenant",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(
-                            description = "Created",
-                            responseCode = "201",
-                            content = @Content(schema = @Schema(implementation = Tenant.class))
-                    ),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Tenant> save(@RequestBody @Valid TenantsRequestDTO dto) {
         return new ResponseEntity<>(tenantService.save(dto), HttpStatus.CREATED);
     }
 
-    @Operation(
-            summary = "Updates a Tenant",
-            description = "Updates a Tenant",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @PutMapping
     public ResponseEntity<Void> update(@RequestBody @Valid TenantsRequestDTO dto) {
         tenantService.update(dto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(
-            summary = "Deletes a Tenant",
-            description = "Deletes a Tenant",
-            tags = {"Tenant"},
-            responses = {
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id) {
         tenantService.delete(id);

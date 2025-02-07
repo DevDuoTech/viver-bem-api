@@ -31,22 +31,6 @@ public class PaymentController {
     @Autowired
     private PaymentService service;
 
-    @Operation(
-            summary = "Finds all Payments",
-            description = "Finds all Payments",
-            tags = {"Payment"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Contract.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<Payment>>> findAll(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -58,38 +42,11 @@ public class PaymentController {
         return ResponseEntity.ok(service.findAll(pageable));
     }
 
-    @Operation(
-            summary = "Adds a new Payment",
-            description = "Adds a new Payment",
-            tags = {"Payment"},
-            responses = {
-                    @ApiResponse(description = "Created", responseCode = "201", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @PostMapping
     public ResponseEntity<String> save(@RequestBody PaymentRequestDTO dto) {
         return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
     }
 
-    @Operation(
-            summary = "Finds all Payments by date",
-            description = "Finds all Payments by date",
-            tags = {"Payment"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Contract.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @GetMapping("/date/{date}")
     public ResponseEntity<List<Payment>> findByPaymentDate(
             @PathVariable(name = "date") @DateTimeFormat(pattern = "yyyy_MM") YearMonth date
