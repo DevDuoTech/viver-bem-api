@@ -16,6 +16,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.YearMonth;
 import java.util.List;
@@ -76,6 +77,7 @@ public class TenantService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
     }
 
+    @Transactional
     public Tenant save(TenantsRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("Tenant cannot be null");
@@ -86,6 +88,7 @@ public class TenantService {
         return tenantRepository.save(tenant);
     }
 
+    @Transactional
     public void update(TenantsRequestDTO dto) {
         if (dto == null)
             throw new BadRequestException("Tenant cannot be null");

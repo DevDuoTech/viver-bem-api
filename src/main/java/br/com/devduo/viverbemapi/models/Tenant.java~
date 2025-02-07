@@ -33,7 +33,7 @@ public class Tenant {
     @Column(name = "birth_local")
     private String birthLocal;
     @Column(name = "is_active")
-    private Boolean isActive = true;
+    private Boolean isActive;
 
     @OneToOne(mappedBy = "tenant")
     private Contract contract;

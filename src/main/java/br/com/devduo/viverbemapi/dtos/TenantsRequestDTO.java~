@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CPF;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Builder
 @Data
@@ -35,7 +35,7 @@ public class TenantsRequestDTO {
     @NotNull(message = "{field.birthdate.required}")
     @Past(message = "{field.birthdate.invalid}")
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private Date birthDate;
+    private LocalDate birthDate;
     @NotEmpty(message = "{field.birthstate.required}")
     private String birthLocal;
     private Boolean isActive;
