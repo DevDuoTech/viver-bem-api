@@ -25,38 +25,11 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Operation(
-            summary = "Creates a new User",
-            description = "Creates a new User with USER_ROLE enum",
-            tags = {"Authentication"},
-            responses = {
-                    @ApiResponse(description = "Created", responseCode = "201", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequestDTO dto) {
         return new ResponseEntity<>(authService.register(dto), HttpStatus.CREATED);
     }
 
-    @Operation(
-            summary = "Login a User",
-            description = "Login a User and returns a JWT Token",
-            tags = {"Authentication"},
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200",
-                            content = {@Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = TokenDTO.class))
-                            )
-                            }),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
-            }
-    )
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(@RequestBody LoginRequestDTO dto) {
         return ResponseEntity.ok(authService.login(dto));

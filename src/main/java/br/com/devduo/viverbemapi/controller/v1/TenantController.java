@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -26,6 +27,7 @@ public class TenantController {
     private TenantService tenantService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<PagedModel<EntityModel<Tenant>>> findAll(
             @ParameterObject Pageable pageable,
             @RequestParam(value = "name", required = false) String name,
@@ -36,11 +38,13 @@ public class TenantController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'FIND_TENANT_BY_ID')")
     public ResponseEntity<Tenant> findById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(tenantService.findById(id));
     }
 
     @GetMapping("/by-cpf")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Tenant> findByCPF(@RequestParam(value = "cpf") String cpf) {
         return ResponseEntity.ok(tenantService.findByCPF(cpf));
     }
@@ -52,12 +56,14 @@ public class TenantController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#dto, 'UPDATE_TENANT')")
     public ResponseEntity<Void> update(@RequestBody @Valid TenantsRequestDTO dto) {
         tenantService.update(dto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable(value = "id") Long id) {
         tenantService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

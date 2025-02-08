@@ -2,11 +2,14 @@ package br.com.devduo.viverbemapi.service.v1.security;
 
 import br.com.devduo.viverbemapi.dtos.TokenDTO;
 import br.com.devduo.viverbemapi.models.Role;
+import br.com.devduo.viverbemapi.models.User;
+import br.com.devduo.viverbemapi.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +24,19 @@ public class JwtTokenService {
     @Value("${security.jwt.token.time}")
     private Long VALIDITY_TIME;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public TokenDTO createAccessToken(String email, Set<Role> roles) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + VALIDITY_TIME);
         String accessToken = getAccessToken(email, roles, now, validity);
         String refreshToken = getRefreshToken(email, roles, now);
 
+        User user = userRepository.findByEmail(email);
+
         return new TokenDTO().builder()
+                .tenantId(user.getTenantId())
                 .email(email)
                 .authenticated(true)
                 .createAt(now)

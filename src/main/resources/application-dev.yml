@@ -32,3 +32,13 @@ springdoc:
   pathsToMatch: /api/**/v1/**
   swagger-ui:
     use-root-path: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          servlet:
+            mvc:
+              method:
+                annotation: TRACE
