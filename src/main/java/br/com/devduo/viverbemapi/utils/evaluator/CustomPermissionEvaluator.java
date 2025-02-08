@@ -70,14 +70,16 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
     private boolean hasUpdateTenantPermission(User loggedUser, Object targetDomainObject) {
         TenantsRequestDTO tenantsRequestDTO = (TenantsRequestDTO) targetDomainObject;
-        if (loggedUser.getRoles().contains(RoleEnum.USER)) {
-            Tenant tenant = tenantRepository.findByEmail(tenantsRequestDTO.getEmail())
-                    .orElse(null);
-            if (tenant != null) {
-                Long userTenantId = loggedUser.getId();
-                return userTenantId.equals(tenant.getId());
+        for (Role role : loggedUser.getRoles()) {
+            if (role.getDescription().equals(RoleEnum.USER)) {
+                Tenant tenant = tenantRepository.findByEmail(tenantsRequestDTO.getEmail())
+                        .orElse(null);
+                if (tenant != null) {
+                    Long userTenantId = loggedUser.getTenantId();
+                    return userTenantId.equals(tenant.getId());
+                }
+                return false;
             }
-            return false;
         }
         return false;
     }

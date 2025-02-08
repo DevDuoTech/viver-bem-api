@@ -22,6 +22,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.com.devduo.viverbemapi.utils.PropertiesUtil.getNullPropertyNames;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -96,9 +97,7 @@ public class TenantService {
         Tenant tenantToUpdate = tenantRepository.findByCPF(dto.getCpf())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this CPF"));
 
-        tenantToUpdate.setName(dto.getName());
-        tenantToUpdate.setCpf(dto.getCpf());
-        tenantToUpdate.setPhone(dto.getPhone());
+        BeanUtils.copyProperties(dto, tenantToUpdate, getNullPropertyNames(dto));
 
         tenantRepository.save(tenantToUpdate);
     }
