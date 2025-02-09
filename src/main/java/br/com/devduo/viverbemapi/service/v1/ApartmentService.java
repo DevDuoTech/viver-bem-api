@@ -55,10 +55,8 @@ public class ApartmentService {
     }
 
     public Apartment findByNumberAp(Long numberAp) {
-        Apartment apartment = apartmentRepository.findByNumberAp(numberAp);
-        if (apartment == null)
-            throw new ResourceNotFoundException("Resource not found for this apartment number");
-        return apartment;
+        return apartmentRepository.findByNumberAp(numberAp)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found for this apartment number"));
     }
 
     public void update(ApartmentsRequestDTO apartment) {

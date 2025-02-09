@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,7 @@ public class Tenant {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "tenant")
     private Contract contract;
 }

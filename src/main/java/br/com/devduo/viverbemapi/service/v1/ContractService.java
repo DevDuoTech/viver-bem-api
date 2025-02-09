@@ -10,6 +10,7 @@ import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
@@ -36,7 +37,7 @@ public class ContractService {
     @Autowired
     private ContractRepository contractRepository;
     @Autowired
-    private ApartmentService apartmentService;
+    private ApartmentRepository apartmentRepository;
     @Autowired
     private TenantRepository tenantRepository;
     @Autowired
@@ -64,29 +65,31 @@ public class ContractService {
     }
 
     @Transactional
-    public String save(ContractRequestSaveDTO dto, Long numberAp) {
+    public String save(ContractRequestDTO dto, Long tenantId, Long numberAp) {
         if (dto == null)
             throw new BadRequestException("ContractDTO cannot be null");
         if (numberAp == null)
             throw new BadRequestException("Apartment number cannot be null");
+        if (tenantId == null)
+            throw new BadRequestException("Tenant ID cannot be null");
 
-        ContractRequestDTO contractRequestDTO = dto.getContractRequestDTO();
-        TenantsRequestDTO tenantDto = dto.getTenantsRequestDTO();
-        Apartment apartment = apartmentService.findByNumberAp(numberAp);
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found for this ID"));
+        Apartment apartment = apartmentRepository.findByNumberAp(numberAp)
+                .orElseThrow(() -> new ResourceNotFoundException("Apartment not found for this ID"));
 
-        if (apartment.getStatus().equals(StatusApart.OCCUPIED))
+        if (apartment.getStatus().equals(StatusApart.OCCUPIED)) {
             throw new BadRequestException("Apartment %d is currently occupied".formatted(apartment.getNumberAp()));
+        }
 
         apartment.setStatus(StatusApart.OCCUPIED);
-
-        Tenant tenant = new Tenant();
-        BeanUtils.copyProperties(tenantDto, tenant);
 
         Contract contract = Contract.builder()
                 .apartment(apartment)
                 .tenant(tenant)
+                .isActive(true)
                 .build();
-        BeanUtils.copyProperties(contractRequestDTO, contract);
+        BeanUtils.copyProperties(dto, contract);
 
         tenant.setContract(contract);
 

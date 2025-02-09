@@ -1,11 +1,9 @@
 package br.com.devduo.viverbemapi.unittests.mocks;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
 import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
-import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 

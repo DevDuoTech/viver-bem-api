@@ -2,12 +2,14 @@ package br.com.devduo.viverbemapi.utils.evaluator;
 
 import br.com.devduo.viverbemapi.dtos.TenantsRequestDTO;
 import br.com.devduo.viverbemapi.enums.RoleEnum;
+import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Role;
 import br.com.devduo.viverbemapi.models.Tenant;
 import br.com.devduo.viverbemapi.models.User;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,34 +38,26 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
         return switch ((String) permission) {
             // User
-            case "UPDATE_PROFILE_PICTURE" -> hasUserPermission(loggedUser, targetDomainObject);
+            case "UPDATE_PROFILE_PICTURE" -> hasPermission(loggedUser, targetDomainObject);
             // Contract
-            case "FIND_ALL_CONTRACTS" -> hasContractPermission(loggedUser, targetDomainObject);
+            case "FIND_ALL_CONTRACTS" -> hasPermission(loggedUser, targetDomainObject);
+            case "GET_CONTRACT_BY_UUID" -> hasContractPermission(loggedUser, targetDomainObject);
             // Tenant
             case "UPDATE_TENANT" -> hasUpdateTenantPermission(loggedUser, targetDomainObject);
-            case "FIND_TENANT_BY_ID" -> hasTenantPermission(loggedUser, targetDomainObject);
+            case "FIND_TENANT_BY_ID" -> hasPermission(loggedUser, targetDomainObject);
             default -> false;
         };
     }
 
-    private boolean hasUserPermission(User loggedUser, Object targetDomainObject) {
-        if (loggedUser.getRoles().contains(RoleEnum.USER)) {
-            Long userId = loggedUser.getId();
-            if (targetDomainObject instanceof Long) {
-                return userId.equals(targetDomainObject);
+    private boolean hasPermission(User loggedUser, Object targetTenantId) {
+        for (Role role : loggedUser.getRoles()) {
+            if (role.getDescription().equals(RoleEnum.USER)) {
+                Long userTenantId = loggedUser.getTenantId();
+                if (targetTenantId instanceof Long) {
+                    return userTenantId.equals(targetTenantId);
+                }
+                return false;
             }
-            return false;
-        }
-        return false;
-    }
-
-    private boolean hasContractPermission(User loggedUser, Object targetTenantId) {
-        if (loggedUser.getRoles().contains(RoleEnum.USER)) {
-            Long userTenantId = loggedUser.getTenantId();
-            if (targetTenantId instanceof Long) {
-                return userTenantId.equals(targetTenantId);
-            }
-            return false;
         }
         return false;
     }
@@ -72,8 +66,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         TenantsRequestDTO tenantsRequestDTO = (TenantsRequestDTO) targetDomainObject;
         for (Role role : loggedUser.getRoles()) {
             if (role.getDescription().equals(RoleEnum.USER)) {
-                Tenant tenant = tenantRepository.findByEmail(tenantsRequestDTO.getEmail())
-                        .orElse(null);
+                Tenant tenant = tenantRepository.findByEmail(tenantsRequestDTO.getEmail()).orElse(null);
                 if (tenant != null) {
                     Long userTenantId = loggedUser.getTenantId();
                     return userTenantId.equals(tenant.getId());
@@ -84,14 +77,17 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         return false;
     }
 
-    private boolean hasTenantPermission(User loggedUser, Object targetTenantId) {
+    private boolean hasContractPermission(User loggedUser, Object targetDomainObject) {
+        ResponseEntity<Contract> response = (ResponseEntity<Contract>) targetDomainObject;
+        if (response.getBody() == null || response.getBody() == null) {
+            return false;
+        }
+
         for (Role role : loggedUser.getRoles()) {
             if (role.getDescription().equals(RoleEnum.USER)) {
                 Long userTenantId = loggedUser.getTenantId();
-                if (targetTenantId instanceof Long) {
-                    return userTenantId.equals(targetTenantId);
-                }
-                return false;
+                Tenant tenant = response.getBody().getTenant();
+                return tenant.getId().equals(userTenantId);
             }
         }
         return false;

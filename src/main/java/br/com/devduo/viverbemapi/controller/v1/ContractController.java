@@ -1,6 +1,6 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
-import br.com.devduo.viverbemapi.dtos.ContractRequestSaveDTO;
+import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
@@ -13,6 +13,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,19 +36,23 @@ public class ContractController {
     }
 
     @GetMapping("/{uuid}")
+    @PostAuthorize("hasRole('ROLE_ADMIN') or hasPermission(returnObject, 'GET_CONTRACT_BY_UUID')")
     public ResponseEntity<Contract> findByUuid(@PathVariable(value = "uuid") UUID uuid) {
         return ResponseEntity.ok(contractService.findByUuid(uuid));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> save(
-            @RequestBody @Valid ContractRequestSaveDTO contractRequestDTO,
-            @RequestParam(value = "num_ap") Long numAp
+            @RequestBody @Valid ContractRequestDTO contractRequestDTO,
+            @RequestHeader(value = "tenantId") Long tenantId,
+            @RequestHeader(value = "num_ap") Long numAp
     ) {
-        return new ResponseEntity<>(contractService.save(contractRequestDTO, numAp), HttpStatus.CREATED);
+        return new ResponseEntity<>(contractService.save(contractRequestDTO, tenantId, numAp), HttpStatus.CREATED);
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> update(@RequestBody @Valid ContractRequestUpdateDTO dto) {
         contractService.update(dto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
