@@ -40,10 +40,4 @@ public class ContractMocks {
                 .build();
     }
 
-    public static ContractRequestSaveDTO mockContractSaveDTO() {
-        return ContractRequestSaveDTO.builder()
-                .contractRequestDTO(mockContractDTO())
-                .tenantsRequestDTO(TenantMocks.mockActiveTenantDTO())
-                .build();
-    }
 }

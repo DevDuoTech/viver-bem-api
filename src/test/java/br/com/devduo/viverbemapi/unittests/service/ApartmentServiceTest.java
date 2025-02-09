@@ -167,7 +167,7 @@ public class ApartmentServiceTest {
     public void testFindByNumberApSuccessfully() {
         Apartment mockApartment = ApartmentMocks.mockOccupiedApartment();
 
-        when(apartmentRepository.findByNumberAp(500L)).thenReturn(mockApartment);
+        when(apartmentRepository.findByNumberAp(500L)).thenReturn(Optional.of(mockApartment));
 
         Apartment ap = apartmentService.findByNumberAp(500L);
 
@@ -219,7 +219,7 @@ public class ApartmentServiceTest {
     public void testUpdateStatusToAvailable() {
         Apartment existingApartment = ApartmentMocks.mockOccupiedApartment();
 
-        Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(existingApartment);
+        Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(Optional.of(existingApartment));
 
         apartmentService.updateStatus(500L);
 
@@ -233,7 +233,7 @@ public class ApartmentServiceTest {
     public void testUpdateStatusToOccupied() {
         Apartment existingApartment = ApartmentMocks.mockAvailableApartment();
 
-        Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(existingApartment);
+        Mockito.when(apartmentRepository.findByNumberAp(500L)).thenReturn(Optional.of(existingApartment));
 
         apartmentService.updateStatus(500L);
 

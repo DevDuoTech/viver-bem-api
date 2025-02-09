@@ -1,20 +1,23 @@
 package br.com.devduo.viverbemapi.unittests.service;
 
+import br.com.devduo.viverbemapi.dtos.ContractRequestDTO;
 import br.com.devduo.viverbemapi.dtos.ContractRequestUpdateDTO;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Apartment;
 import br.com.devduo.viverbemapi.models.Contract;
 import br.com.devduo.viverbemapi.models.Payment;
+import br.com.devduo.viverbemapi.models.Tenant;
+import br.com.devduo.viverbemapi.repository.ApartmentRepository;
 import br.com.devduo.viverbemapi.repository.ContractRepository;
 import br.com.devduo.viverbemapi.repository.PaymentRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
-import br.com.devduo.viverbemapi.service.v1.ApartmentService;
 import br.com.devduo.viverbemapi.service.v1.ContractService;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
 import br.com.devduo.viverbemapi.unittests.mocks.ApartmentMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.ContractMocks;
 import br.com.devduo.viverbemapi.unittests.mocks.PaymentMocks;
+import br.com.devduo.viverbemapi.unittests.mocks.TenantMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +55,7 @@ public class ContractServiceTest {
     @Mock
     private PagedResourcesAssembler<Contract> assembler;
     @Mock
-    private ApartmentService apartmentService;
+    private ApartmentRepository apartmentRepository;
     @Mock
     private TenantRepository tenantRepository;
     @Mock
@@ -108,7 +111,7 @@ public class ContractServiceTest {
         assertNotNull(result.getUuid());
 
         assertEquals(mockedContract.getUuid(), result.getUuid());
-        assertEquals(mockedContract.getApartment() , result.getApartment());
+        assertEquals(mockedContract.getApartment(), result.getApartment());
         assertEquals(mockedContract.getPrice(), result.getPrice());
         assertEquals(mockedContract.getStartDate(), result.getStartDate());
         assertEquals(mockedContract.getEndDate(), result.getEndDate());
@@ -178,7 +181,8 @@ public class ContractServiceTest {
     @Test
     @DisplayName("Persist a new Contract with available Apartment Successfully")
     public void testSaveContractSuccessfully() {
-        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+        ContractRequestDTO contractRequestDTO = ContractMocks.mockContractDTO();
+        Tenant tenant = TenantMocks.mockActiveTenant();
         Contract mockedContract = ContractMocks.mockContract();
         Contract mockedContract2 = ContractMocks.mockContract();
         mockedContract2.setUuid(UUID.randomUUID());
@@ -187,10 +191,12 @@ public class ContractServiceTest {
 
         when(repository.save(any(Contract.class))).thenReturn(mockedContract);
         when(repository.findById(any(UUID.class))).thenReturn(Optional.of(mockedContract2));
-        when(apartmentService.findByNumberAp(mockedAvailableApartment.getNumberAp())).thenReturn(mockedAvailableApartment);
+        when(tenantRepository.findById(tenant.getId())).thenReturn(Optional.of(tenant));
+        when(apartmentRepository.findByNumberAp(mockedAvailableApartment.getNumberAp()))
+                .thenReturn(Optional.of(mockedAvailableApartment));
         when(paymentRepository.save(any(Payment.class))).thenReturn(any(Payment.class));
 
-        String result = service.save(mockContractSaveDTO, mockedAvailableApartment.getNumberAp());
+        String result = service.save(contractRequestDTO, tenant.getId(), mockedAvailableApartment.getNumberAp());
 
         assertNotNull(result);
         assertEquals("Contract saved successfully", result);
@@ -199,13 +205,16 @@ public class ContractServiceTest {
     @Test
     @DisplayName("Tries to persist a new Contract with occupied Apartment and throws a BadRequestException")
     public void testSaveContractThrowsBadRequestException() {
-        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+        ContractRequestDTO contractRequestDTO = ContractMocks.mockContractDTO();
+        Tenant tenant = TenantMocks.mockActiveTenant();
         Apartment mockedOccupiedApartment = ApartmentMocks.mockOccupiedApartment();
 
-        when(apartmentService.findByNumberAp(mockedOccupiedApartment.getNumberAp())).thenReturn(mockedOccupiedApartment);
+        when(tenantRepository.findById(tenant.getId())).thenReturn(Optional.of(tenant));
+        when(apartmentRepository.findByNumberAp(mockedOccupiedApartment.getNumberAp()))
+                .thenReturn(Optional.of(mockedOccupiedApartment));
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            service.save(mockContractSaveDTO, mockedOccupiedApartment.getNumberAp());
+            service.save(contractRequestDTO, tenant.getId(), mockedOccupiedApartment.getNumberAp());
         });
 
         String expectedMessage = String.format("Apartment %s is currently occupied", mockedOccupiedApartment.getNumberAp());
@@ -220,7 +229,7 @@ public class ContractServiceTest {
         Apartment mockAvailableApartment = ApartmentMocks.mockAvailableApartment();
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            service.save(null, mockAvailableApartment.getNumberAp());
+            service.save(null, null, mockAvailableApartment.getNumberAp());
         });
 
         String expectedMessage = "ContractDTO cannot be null";
@@ -232,10 +241,10 @@ public class ContractServiceTest {
     @Test
     @DisplayName("Tries to persist a new Contract without Apartment number and throws a BadRequestException")
     public void testSaveContractWithoutApNumThrowsBadRequestException() {
-        ContractRequestSaveDTO mockContractSaveDTO = ContractMocks.mockContractSaveDTO();
+        ContractRequestDTO mockedContractDTO = ContractMocks.mockContractDTO();
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            service.save(mockContractSaveDTO, null);
+            service.save(mockedContractDTO, null, null);
         });
 
         String expectedMessage = "Apartment number cannot be null";
