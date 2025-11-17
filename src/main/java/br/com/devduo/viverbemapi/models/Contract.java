@@ -40,7 +40,7 @@ public class Contract {
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "number_ap", referencedColumnName = "number_ap")
     private Apartment apartment;
 }
