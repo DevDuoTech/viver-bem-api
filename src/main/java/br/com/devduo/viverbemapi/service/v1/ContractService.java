@@ -18,6 +18,7 @@ import br.com.devduo.viverbemapi.utils.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -48,13 +49,24 @@ public class ContractService {
     private PaymentService paymentService;
 
     public PagedModel<EntityModel<Contract>> findAll(Pageable pageable, Long tenantId) {
-        Page<Contract> contractPage = contractRepository.findAllByTenantIs(pageable, tenantId);
+
+        Page<Contract> contractPage = contractRepository.findAll(pageable);
+
+        List<Contract> contractList = contractPage.getContent();
+
+        if (tenantId != null) {
+            contractList = contractList.stream()
+                    .filter(c -> c.getTenant().getId().equals(tenantId))
+                    .toList();
+        }
+
+        Page<Contract> contractsFiltered = new PageImpl<>(contractList);
 
         Link link = linkTo(methodOn(ContractController.class)
                 .findAll(pageable, tenantId))
                 .withSelfRel();
 
-        return assembler.toModel(contractPage, link);
+        return assembler.toModel(contractsFiltered, link);
     }
 
     public Contract findByUuid(UUID uuid) {

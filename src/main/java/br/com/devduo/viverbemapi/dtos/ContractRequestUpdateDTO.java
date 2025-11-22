@@ -16,6 +16,5 @@ import java.util.UUID;
 public class ContractRequestUpdateDTO {
     private UUID uuid;
     @Valid
-    @NotNull(message = "{field.contract.required}")
     private ContractRequestDTO contractRequestDTO;
 }

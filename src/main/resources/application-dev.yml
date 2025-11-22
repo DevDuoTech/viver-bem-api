@@ -33,12 +33,20 @@ springdoc:
   swagger-ui:
     use-root-path: true
 
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+
 logging:
   level:
     org:
       springframework:
-        web:
-          servlet:
-            mvc:
-              method:
-                annotation: TRACE
+        web: DEBUG
+        web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
+        web.servlet.mvc.support.DefaultHandlerExceptionResolver: DEBUG
+        web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler: DEBUG
+        web.servlet.HandlerExceptionResolver: DEBUG
+      springframework.boot.autoconfigure.web.servlet.error.BasicErrorController: DEBUG
+      hibernate: DEBUG

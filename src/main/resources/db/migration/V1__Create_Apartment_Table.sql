@@ -3,6 +3,8 @@ CREATE TABLE apartment (
    number_ap BIGINT,
    description VARCHAR(255),
    status VARCHAR(255),
+   created_at TIMESTAMPTZ NOT NULL,
+   updated_at TIMESTAMPTZ,
    CONSTRAINT pk_apartment PRIMARY KEY (id)
 );
 

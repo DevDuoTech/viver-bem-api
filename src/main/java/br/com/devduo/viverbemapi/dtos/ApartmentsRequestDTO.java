@@ -3,7 +3,7 @@ package br.com.devduo.viverbemapi.dtos;
 import br.com.devduo.viverbemapi.enums.StatusApart;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -11,9 +11,8 @@ import lombok.Data;
 public class ApartmentsRequestDTO {
     @Positive
     private Long id;
-    @NotEmpty
+    @NotBlank
     private String description;
-    @NotEmpty
     @Enumerated(EnumType.STRING)
     private StatusApart status;
 }

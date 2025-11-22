@@ -10,6 +10,8 @@ CREATE TABLE contract
     is_active     BOOLEAN,
     tenant_id     BIGINT,
     number_ap     BIGINT,
+    created_at    TIMESTAMPTZ NOT NULL,
+    updated_at    TIMESTAMPTZ,
     CONSTRAINT pk_contract PRIMARY KEY (uuid)
 );
 

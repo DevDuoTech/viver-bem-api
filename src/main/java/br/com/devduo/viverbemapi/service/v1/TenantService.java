@@ -35,7 +35,10 @@ public class TenantService {
     @Autowired
     private PagedResourcesAssembler<Tenant> assembler;
 
-    public PagedModel<EntityModel<Tenant>> findAll(Pageable pageable, String name, YearMonth yearMonth, Boolean isActive) {
+    public PagedModel<EntityModel<Tenant>> findAll(
+            Pageable pageable, String name,
+            YearMonth yearMonth, Boolean isActive,
+            Boolean hasContractActive) {
         Page<Tenant> tenantsPage = tenantRepository.findAll(pageable);
         List<Tenant> tenantList = tenantsPage.get().toList();
 
@@ -50,6 +53,14 @@ public class TenantService {
                     .filter(t -> t.getIsActive().equals(false))
                     .collect(Collectors.toList());
 
+        if (hasContractActive != null)
+            tenantList = tenantList.stream()
+                .filter(t -> {
+                    if (t.getContract() == null) return false;
+                    return t.getContract().getIsActive().equals(hasContractActive);
+                })
+                .toList();
+
         Page<Tenant> tenantFiltered = new PageImpl<>(tenantList);
 
         Link link = linkTo(methodOn(TenantController.class)
@@ -57,7 +68,8 @@ public class TenantService {
                         pageable,
                         name,
                         yearMonth,
-                        isActive
+                        isActive,
+                        hasContractActive
                 ))
                 .withSelfRel();
 

@@ -31,9 +31,10 @@ public class TenantController {
             @ParameterObject Pageable pageable,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy_MM") YearMonth yearMonth,
-            @RequestParam(value = "is_active", defaultValue = "true") Boolean isActive
+            @RequestParam(value = "is_active", defaultValue = "true") Boolean isActive,
+            @RequestParam(value = "has_contract_active", required = false) Boolean hasContract
     ) {
-        return ResponseEntity.ok(tenantService.findAll(pageable, name, yearMonth, isActive));
+        return ResponseEntity.ok(tenantService.findAll(pageable, name, yearMonth, isActive, hasContract));
     }
 
     @GetMapping("/{id}")

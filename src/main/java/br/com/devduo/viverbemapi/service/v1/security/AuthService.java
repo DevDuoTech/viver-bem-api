@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.service.v1.security;
 
 import br.com.devduo.viverbemapi.dtos.LoginRequestDTO;
+import br.com.devduo.viverbemapi.dtos.RefreshTokenDTO;
 import br.com.devduo.viverbemapi.dtos.RegisterRequestDTO;
 import br.com.devduo.viverbemapi.dtos.TokenDTO;
 import br.com.devduo.viverbemapi.enums.RoleEnum;
@@ -12,9 +13,12 @@ import br.com.devduo.viverbemapi.models.User;
 import br.com.devduo.viverbemapi.repository.RoleRepository;
 import br.com.devduo.viverbemapi.repository.TenantRepository;
 import br.com.devduo.viverbemapi.repository.UserRepository;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +73,21 @@ public class AuthService {
 
         if (user == null)
             throw new ResourceNotFoundException("Email/password incorrect or non-existent");
+
+        return jwtTokenService.createAccessToken(user.getEmail(), user.getRoles());
+    }
+
+    public TokenDTO refreshToken(RefreshTokenDTO token) {
+        DecodedJWT decodedJWT = jwtTokenService.decodedJWT(token.getRefreshToken());
+
+        String email = decodedJWT.getSubject();
+        User user = userRepository.findByEmail(email);
+
+        if (user == null)
+            throw new ResourceNotFoundException("[ERRO] Usuário não encontrado");
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return jwtTokenService.createAccessToken(user.getEmail(), user.getRoles());
     }

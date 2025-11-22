@@ -8,7 +8,9 @@ CREATE TABLE tenant
     rg          VARCHAR(9) UNIQUE,
     birth_date  TIMESTAMP WITHOUT TIME ZONE,
     birth_local VARCHAR(255),
-    is_active   BOOLEAN
+    is_active   BOOLEAN,
+    created_at  TIMESTAMPTZ NOT NULL,
+    updated_at  TIMESTAMPTZ
 );
 
 ALTER TABLE tenant
