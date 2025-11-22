@@ -39,27 +39,7 @@ public class TenantService {
             Pageable pageable, String name,
             YearMonth yearMonth, Boolean isActive,
             Boolean hasContractActive) {
-        Page<Tenant> tenantsPage = tenantRepository.findAll(pageable);
-        List<Tenant> tenantList = tenantsPage.get().toList();
-
-        if (name != null) {
-            tenantList = tenantList.stream()
-                    .filter(t -> t.getName().toLowerCase().contains(name.toLowerCase()))
-                    .collect(Collectors.toList());
-        }
-
-        if (!isActive)
-            tenantList = tenantList.stream()
-                    .filter(t -> t.getIsActive().equals(false))
-                    .collect(Collectors.toList());
-
-        if (hasContractActive != null)
-            tenantList = tenantList.stream()
-                .filter(t -> {
-                    if (t.getContract() == null) return false;
-                    return t.getContract().getIsActive().equals(hasContractActive);
-                })
-                .toList();
+        List<Tenant> tenantList = tenantRepository.findAll(pageable, name, isActive, hasContractActive);
 
         Page<Tenant> tenantFiltered = new PageImpl<>(tenantList);
 
