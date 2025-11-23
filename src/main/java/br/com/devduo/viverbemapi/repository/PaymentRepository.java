@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.repository;
 
 import br.com.devduo.viverbemapi.models.Payment;
+import br.com.devduo.viverbemapi.repository.custom.PaymentRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Long>, PaymentRepositoryCustom {
     List<Payment> findByTenantId(Long id);
 
     @Query("SELECT p FROM Payment p " +

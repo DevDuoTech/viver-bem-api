@@ -1,6 +1,8 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
+import br.com.devduo.viverbemapi.enums.PaymentStatus;
+import br.com.devduo.viverbemapi.enums.PaymentType;
 import br.com.devduo.viverbemapi.models.Payment;
 import br.com.devduo.viverbemapi.service.v1.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +28,13 @@ public class PaymentController {
 
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<Payment>>> findAll(
-            @ParameterObject Pageable pageable
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) PaymentStatus status,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth competency,
+            @RequestParam(required = false) PaymentType paymentType,
+            @RequestParam(required = false) Long tenantId
     ) {
-        return ResponseEntity.ok(service.findAll(pageable));
+        return ResponseEntity.ok(service.findAll(pageable, status, competency, paymentType, tenantId));
     }
 
     @PostMapping

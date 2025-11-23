@@ -3,6 +3,7 @@ package br.com.devduo.viverbemapi.service.v1;
 import br.com.devduo.viverbemapi.controller.v1.PaymentController;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
+import br.com.devduo.viverbemapi.enums.PaymentType;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
 import br.com.devduo.viverbemapi.exceptions.ResourceNotFoundException;
 import br.com.devduo.viverbemapi.models.Contract;
@@ -15,6 +16,7 @@ import br.com.devduo.viverbemapi.utils.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -51,11 +53,17 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
     }
 
-    public PagedModel<EntityModel<Payment>> findAll(Pageable pageable) {
-        Page<Payment> paymentPage = repository.findAll(pageable);
+    public PagedModel<EntityModel<Payment>> findAll(
+            Pageable pageable, PaymentStatus status,
+            YearMonth competency, PaymentType paymentType,
+            Long tenantId
+    ) {
+        List<Payment> payments = repository.findAll(pageable, status, competency, paymentType, tenantId);
+
+        PageImpl<Payment> paymentPage = new PageImpl<>(payments);
 
         Link link = linkTo(methodOn(PaymentController.class)
-                .findAll(pageable))
+                .findAll(pageable, status, competency, paymentType, tenantId))
                 .withSelfRel();
 
         return assembler.toModel(paymentPage, link);
@@ -85,7 +93,7 @@ public class PaymentService {
     public String processPayment(PaymentRequestDTO dto, Tenant tenant) {
         Payment payment = repository.findByCompetencyAndTenantId(dto.getCompetency(), tenant.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                                "Payment for competency %s not found".formatted(dto.getCompetency())
+                        "Payment for competency %s not found".formatted(dto.getCompetency())
                 ));
 
         if (payment.getPaymentStatus() == PaymentStatus.PAID)
