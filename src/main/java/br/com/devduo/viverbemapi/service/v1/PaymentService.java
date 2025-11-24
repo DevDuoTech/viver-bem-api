@@ -1,7 +1,9 @@
 package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.PaymentController;
+import br.com.devduo.viverbemapi.dtos.PaymentPendingDTO;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
+import br.com.devduo.viverbemapi.dtos.PaymentSummaryDTO;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.PaymentType;
 import br.com.devduo.viverbemapi.exceptions.BadRequestException;
@@ -15,7 +17,6 @@ import br.com.devduo.viverbemapi.strategy.NewPaymentValidationStrategy;
 import br.com.devduo.viverbemapi.utils.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -27,8 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.List;
 
+import static br.com.devduo.viverbemapi.utils.PropertiesUtil.getNullPropertyNames;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -109,9 +111,9 @@ public class PaymentService {
         return String.format("Payment for the month %s has been successfully registered", formattedMonths);
     }
 
-    public Payment update(Payment payment) {
-        Payment paymentToUpdate = findById(payment.getId());
-        BeanUtils.copyProperties(payment, paymentToUpdate);
+    public Payment update(Long id, PaymentRequestDTO payment) {
+        Payment paymentToUpdate = findById(id);
+        BeanUtils.copyProperties(payment, paymentToUpdate, getNullPropertyNames(payment));
         return repository.save(paymentToUpdate);
     }
 
@@ -126,5 +128,13 @@ public class PaymentService {
         LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 
         return repository.findByPaymentDateBetween(firstDayOfMonth, lastDayOfMonth);
+    }
+
+    public List<PaymentSummaryDTO> getSummaryPayments(LocalDate startDate, LocalDate endDate) {
+        return repository.getSummaryPayments(startDate, endDate);
+    }
+
+    public List<PaymentPendingDTO> getPaymentsPending(LocalDate startDate, LocalDate endDate) {
+        return repository.getPendingSummary(startDate, endDate);
     }
 }

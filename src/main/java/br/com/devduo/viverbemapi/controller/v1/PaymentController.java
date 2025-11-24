@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.controller.v1;
 
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
+import br.com.devduo.viverbemapi.dtos.PaymentPendingDTO;
 import br.com.devduo.viverbemapi.enums.PaymentStatus;
 import br.com.devduo.viverbemapi.enums.PaymentType;
 import br.com.devduo.viverbemapi.models.Payment;
@@ -40,6 +41,15 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<String> save(@RequestBody PaymentRequestDTO dto) {
         return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable(value = "id") Long id,
+            @RequestBody PaymentRequestDTO payment
+    ) {
+        service.update(id, payment);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/date/{date}")

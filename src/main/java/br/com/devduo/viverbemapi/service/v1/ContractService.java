@@ -48,11 +48,17 @@ public class ContractService {
     @Autowired
     private PaymentService paymentService;
 
-    public PagedModel<EntityModel<Contract>> findAll(Pageable pageable, Long tenantId) {
+    public PagedModel<EntityModel<Contract>> findAll(Pageable pageable, Boolean isActive, Long tenantId) {
 
         Page<Contract> contractPage = contractRepository.findAll(pageable);
 
         List<Contract> contractList = contractPage.getContent();
+
+        if (isActive != null) {
+            contractList = contractList.stream()
+                    .filter(c -> c.getIsActive().equals(isActive))
+                    .toList();
+        }
 
         if (tenantId != null) {
             contractList = contractList.stream()
@@ -63,7 +69,7 @@ public class ContractService {
         Page<Contract> contractsFiltered = new PageImpl<>(contractList);
 
         Link link = linkTo(methodOn(ContractController.class)
-                .findAll(pageable, tenantId))
+                .findAll(pageable, isActive, tenantId))
                 .withSelfRel();
 
         return assembler.toModel(contractsFiltered, link);

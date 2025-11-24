@@ -30,9 +30,10 @@ public class ContractController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#tenantId, 'FIND_ALL_CONTRACTS')")
     public ResponseEntity<PagedModel<EntityModel<Contract>>> findAll(
             @ParameterObject Pageable pageable,
+            @RequestParam(required = false) Boolean isActive,
             @RequestParam(required = false) Long tenantId
     ) {
-        return ResponseEntity.ok(contractService.findAll(pageable, tenantId));
+        return ResponseEntity.ok(contractService.findAll(pageable, isActive, tenantId));
     }
 
     @GetMapping("/{uuid}")
