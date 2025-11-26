@@ -1,6 +1,7 @@
 package br.com.devduo.viverbemapi.service.v1;
 
 import br.com.devduo.viverbemapi.controller.v1.PaymentController;
+import br.com.devduo.viverbemapi.dtos.DashboardCardSummaryDTO;
 import br.com.devduo.viverbemapi.dtos.PaymentPendingDTO;
 import br.com.devduo.viverbemapi.dtos.PaymentRequestDTO;
 import br.com.devduo.viverbemapi.dtos.PaymentSummaryDTO;
@@ -136,5 +137,25 @@ public class PaymentService {
 
     public List<PaymentPendingDTO> getPaymentsPending(LocalDate startDate, LocalDate endDate) {
         return repository.getPendingSummary(startDate, endDate);
+    }
+
+    public DashboardCardSummaryDTO getDashboardCardSummary(Pageable pageable, LocalDate startDate, LocalDate endDate) {
+        List<Tenant> tenants = tenantRepository.findAll(pageable, null, null, true);
+        PagedModel<EntityModel<Contract>> contracts = contractService.findAll(pageable, true, null);
+
+        double sumPaymentsPaid = getSummaryPayments(startDate, endDate).stream()
+                .mapToDouble(PaymentSummaryDTO::getTotal)
+                .sum();
+
+        double sumPaymentsPending = getPaymentsPending(startDate, endDate).stream()
+                .mapToDouble(PaymentPendingDTO::getTotalPending)
+                .sum();
+
+        return DashboardCardSummaryDTO.builder()
+                .totalActiveContracts(contracts.getContent().size())
+                .totalActiveTenants(tenants.size())
+                .totalReceivedThisMonth(sumPaymentsPaid)
+                .totalPendingThisMonth(sumPaymentsPending)
+                .build();
     }
 }
